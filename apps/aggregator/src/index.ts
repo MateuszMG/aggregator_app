@@ -1,1 +1,1 @@
-console.log("Aggregator service");
+console.log('Aggregator service');

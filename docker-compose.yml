@@ -1,4 +1,4 @@
-version: "3.9"
+version: '3.9'
 services:
   postgres-db:
     image: postgres:15
@@ -7,7 +7,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: service_orders
     ports:
-      - "5432:5432"
+      - '5432:5432'
     volumes:
       - ./sql:/docker-entrypoint-initdb.d
 
@@ -16,8 +16,8 @@ services:
       context: .
       dockerfile: gcp-emulators.Dockerfile
     ports:
-      - "8085:8085"
-      - "8086:8086"
+      - '8085:8085'
+      - '8086:8086'
     command: >
       bash -c "gcloud beta emulators pubsub start --host-port=0.0.0.0:8085 & \
                gcloud beta emulators datastore start --host-port=0.0.0.0:8086 --project=local-dev --no-store-on-disk"
@@ -43,7 +43,7 @@ services:
       - postgres-db
       - gcp-emulators
     ports:
-      - "3001:3001"
+      - '3001:3001'
     environment:
       PORT: 3001
       DATABASE_URL: postgres://postgres:postgres@postgres-db:5432/service_orders
