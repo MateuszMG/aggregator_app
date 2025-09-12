@@ -20,13 +20,20 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
-  apps/aggregator: {}
+  apps/aggregator:
+    dependencies:
+      shared-types:
+        specifier: workspace:*
+        version: link:../../packages/shared-types
 
   apps/api:
     dependencies:
       express:
         specifier: ^5.1.0
         version: 5.1.0
+      shared-types:
+        specifier: workspace:*
+        version: link:../../packages/shared-types
     devDependencies:
       '@types/express':
         specifier: ^5.0.3
@@ -34,6 +41,12 @@ importers:
       ts-node-dev:
         specifier: ^2.0.0
         version: 2.0.0(@types/node@24.3.1)(typescript@5.9.2)
+
+  packages/shared-types:
+    dependencies:
+      zod:
+        specifier: ^3.23.8
+        version: 3.25.76
 
 packages:
   '@cspotcode/source-map-support@0.8.1':
@@ -723,6 +736,10 @@ packages:
       { integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q== }
     engines: { node: '>=6' }
 
+  zod@3.25.76:
+    resolution:
+      { integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ== }
+
 snapshots:
   '@cspotcode/source-map-support@0.8.1':
     dependencies:
@@ -1293,3 +1310,5 @@ snapshots:
   xtend@4.0.2: {}
 
   yn@3.1.1: {}
+
+  zod@3.25.76: {}
