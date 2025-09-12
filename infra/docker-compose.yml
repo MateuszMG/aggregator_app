@@ -9,11 +9,11 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - ./sql:/docker-entrypoint-initdb.d
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql:ro
 
   gcp-emulators:
     build:
-      context: .
+      context: ..
       dockerfile: gcp-emulators.Dockerfile
     ports:
       - '8085:8085'
@@ -24,7 +24,7 @@ services:
 
   aggregator:
     build:
-      context: .
+      context: ..
       dockerfile: apps/aggregator/Dockerfile
     depends_on:
       - postgres-db
@@ -34,10 +34,11 @@ services:
       PUBSUB_EMULATOR_HOST: gcp-emulators:8085
       DATASTORE_EMULATOR_HOST: gcp-emulators:8086
     volumes:
-      - ./apps/aggregator:/usr/src/app/apps/aggregator
+      - ../apps/aggregator:/usr/src/app/apps/aggregator
+
   api:
     build:
-      context: .
+      context: ..
       dockerfile: apps/api/Dockerfile
     depends_on:
       - postgres-db
@@ -50,4 +51,4 @@ services:
       PUBSUB_EMULATOR_HOST: gcp-emulators:8085
       DATASTORE_EMULATOR_HOST: gcp-emulators:8086
     volumes:
-      - ./apps/api:/usr/src/app/apps/api
+      - ../apps/api:/usr/src/app/apps/api

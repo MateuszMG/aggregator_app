@@ -1,3 +1,4 @@
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 SET client_min_messages TO WARNING;
 
 -- Mechanics table
@@ -69,7 +70,7 @@ BEGIN
     FOR i IN 1..10000 LOOP
         -- Generate random registered date
         reg_date := timestamp '2025-01-01' + random() * (timestamp '2025-08-31' - timestamp '2025-01-01');
-        
+
         -- 95% chance of having a finished date
         IF random() < 0.95 THEN
             fin_date := reg_date + (random() * 14 + 1) * interval '1 day'; -- finished 1 to 15 days after registration
@@ -96,6 +97,5 @@ BEGIN
         );
     END LOOP;
 END $$;
-
 
 COMMIT;
