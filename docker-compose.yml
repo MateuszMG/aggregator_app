@@ -1,0 +1,53 @@
+version: "3.9"
+services:
+  postgres-db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: service_orders
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./sql:/docker-entrypoint-initdb.d
+
+  gcp-emulators:
+    build:
+      context: .
+      dockerfile: gcp-emulators.Dockerfile
+    ports:
+      - "8085:8085"
+      - "8086:8086"
+    command: >
+      bash -c "gcloud beta emulators pubsub start --host-port=0.0.0.0:8085 & \
+               gcloud beta emulators datastore start --host-port=0.0.0.0:8086 --project=local-dev --no-store-on-disk"
+
+  aggregator:
+    build:
+      context: .
+      dockerfile: apps/aggregator/Dockerfile
+    depends_on:
+      - postgres-db
+      - gcp-emulators
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres-db:5432/service_orders
+      PUBSUB_EMULATOR_HOST: gcp-emulators:8085
+      DATASTORE_EMULATOR_HOST: gcp-emulators:8086
+    volumes:
+      - ./apps/aggregator:/usr/src/app/apps/aggregator
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    depends_on:
+      - postgres-db
+      - gcp-emulators
+    ports:
+      - "3001:3001"
+    environment:
+      PORT: 3001
+      DATABASE_URL: postgres://postgres:postgres@postgres-db:5432/service_orders
+      PUBSUB_EMULATOR_HOST: gcp-emulators:8085
+      DATASTORE_EMULATOR_HOST: gcp-emulators:8086
+    volumes:
+      - ./apps/api:/usr/src/app/apps/api
