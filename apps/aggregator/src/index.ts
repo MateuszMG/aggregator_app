@@ -3,12 +3,14 @@ import { Datastore } from '@google-cloud/datastore';
 import { Pool } from 'pg';
 import { getISOWeek, getISOWeekYear } from 'date-fns';
 import { buildReportId, monthlyReportSchema, reportFiltersSchema, PUBSUB_TOPICS, getSubscriptionName } from 'shared';
+import { logger } from '../../api/src/middleware/logger';
 
 const projectId = process.env.GCLOUD_PROJECT || 'local-dev';
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({ connectionString });
 const pubsub = new PubSub({ projectId });
 const datastore = new Datastore({ projectId });
+
 interface MechanicPerformanceInternal {
   totalOrders: number;
   totalHours: number;
@@ -95,10 +97,10 @@ async function main() {
     }
   });
 
-  console.log('Aggregator service listening for messages...');
+  logger.info('Aggregator service listening for messages...');
 }
 
 main().catch((err) => {
-  console.error('Failed to start aggregator', err);
+  logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to start aggregator');
   process.exit(1);
 });

@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { PubSub } from '@google-cloud/pubsub';
 import { Datastore } from '@google-cloud/datastore';
 import { Pool } from 'pg';
@@ -6,6 +6,7 @@ import { buildReportId, monthlyReportSchema, reportFiltersSchema, availableMonth
 import { appLimiter } from './middleware/rateLimiter';
 import helmet from 'helmet';
 import cors from 'cors';
+import { logger } from './middleware/logger';
 
 const app = express();
 app.use(express.json());
@@ -20,12 +21,12 @@ const datastore = new Datastore({ projectId });
 const connectionString = process.env.DATABASE_URL;
 const pool = new Pool({ connectionString });
 
-app.use('/health_check', (_req, res) => {
-  console.log('ok');
+app.use('/health_check', (req: Request, res: Response) => {
+  logger.info('ok');
   res.json({ msg: 'ok health_check' });
 });
 
-app.get('/api/reports/available-months', async (_req, res) => {
+app.get('/api/reports/available-months', async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { rows } = await pool.query(
       `SELECT DISTINCT
@@ -38,12 +39,13 @@ app.get('/api/reports/available-months', async (_req, res) => {
     const months = availableMonthsSchema.parse(rows.map((r) => ({ year: Number(r.year), month: Number(r.month) })));
     res.json(months);
   } catch (err) {
-    console.error('Failed to fetch available months', err);
-    res.status(500).send();
+    logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to fetch available months');
+    (err as any).logged = true;
+    next(err);
   }
 });
 
-app.post('/api/reports/generate', async (req, res) => {
+app.post('/api/reports/generate', async (req: Request, res: Response, next: NextFunction) => {
   const parsed = reportFiltersSchema.safeParse(req.body);
   if (!parsed.success) {
     return res.status(400).json({ errors: parsed.error.format() });
@@ -54,12 +56,13 @@ app.post('/api/reports/generate', async (req, res) => {
     await topic.publishMessage({ json: { year, month } });
     res.status(202).send();
   } catch (err) {
-    console.error('Failed to publish message', err);
-    res.status(500).send();
+    logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to publish message');
+    (err as any).logged = true;
+    next(err);
   }
 });
 
-app.get('/api/reports/monthly/:year/:month', async (req, res) => {
+app.get('/api/reports/monthly/:year/:month', async (req: Request, res: Response, next: NextFunction) => {
   const parsed = reportFiltersSchema.safeParse({
     year: Number(req.params.year),
     month: Number(req.params.month),
@@ -77,9 +80,17 @@ app.get('/api/reports/monthly/:year/:month', async (req, res) => {
     const report = monthlyReportSchema.parse(entity);
     res.json(report);
   } catch (err) {
-    console.error('Failed to fetch report', err);
-    res.status(500).send();
+    logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to fetch available months');
+    (err as any).logged = true;
+    next(err);
   }
+});
+
+app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
+  if (!err.logged) {
+    logger.error({ err: err instanceof Error ? err.message : String(err) });
+  }
+  res.status(500).json({ error: 'Internal Server Error' });
 });
 
 export { app };
