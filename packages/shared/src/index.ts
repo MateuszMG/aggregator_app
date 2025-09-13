@@ -9,6 +9,13 @@ export const reportFiltersSchema = z.object({
 });
 export type ReportFilters = z.infer<typeof reportFiltersSchema>;
 
+/**
+ * Array schema representing available report months.
+ * Reuses {@link reportFiltersSchema} for validating year/month pairs.
+ */
+export const availableMonthsSchema = z.array(reportFiltersSchema);
+export type AvailableMonth = ReportFilters;
+
 const mechanicPerformanceSchema = z.object({
   totalOrders: z.number().int().nonnegative(),
   averageHoursPerOrder: z.number().nonnegative(),

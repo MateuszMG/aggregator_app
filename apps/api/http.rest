@@ -4,16 +4,16 @@
 GET {{host}}/health_check
 
 ### List available report months
-GET {{host}}ing the API
+GET {{host}}/api/reports/available-months
 
 ### Request report generation
 POST {{host}}/api/reports/generate
 Content-Type: application/json
 
 {
-  "year": 2024,
-  "month": 1
+  "year": 2025,
+  "month": 4
 }
 
 ### Get a monthly report
-GET {{host}}/api/reports/monthly/2024/1
+GET {{host}}/api/reports/monthly/2025/4

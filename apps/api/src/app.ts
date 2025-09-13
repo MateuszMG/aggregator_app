@@ -1,7 +1,8 @@
 import express from 'express';
 import { PubSub } from '@google-cloud/pubsub';
 import { Datastore } from '@google-cloud/datastore';
-import { buildReportId, monthlyReportSchema, reportFiltersSchema, PUBSUB_TOPICS } from 'shared';
+import { Pool } from 'pg';
+import { buildReportId, monthlyReportSchema, reportFiltersSchema, availableMonthsSchema, PUBSUB_TOPICS } from 'shared';
 
 const app = express();
 app.use(express.json());
@@ -9,15 +10,30 @@ app.use(express.json());
 const projectId = process.env.GCLOUD_PROJECT || 'local-dev';
 const pubsub = new PubSub({ projectId });
 const datastore = new Datastore({ projectId });
+const connectionString = process.env.DATABASE_URL;
+const pool = new Pool({ connectionString });
 
 app.use('/health_check', (_req, res) => {
   console.log('ok');
   res.json({ msg: 'ok health_check' });
 });
 
-app.get('/api/reports/available-months', (_req, res) => {
-  // TODO: query PostgreSQL for available months
-  res.json([]);
+app.get('/api/reports/available-months', async (_req, res) => {
+  try {
+    const { rows } = await pool.query(
+      `SELECT DISTINCT
+         EXTRACT(YEAR FROM date_finished AT TIME ZONE 'UTC') AS year,
+         EXTRACT(MONTH FROM date_finished AT TIME ZONE 'UTC') AS month
+       FROM service_orders
+       WHERE date_finished IS NOT NULL
+       ORDER BY year, month`,
+    );
+    const months = availableMonthsSchema.parse(rows.map((r) => ({ year: Number(r.year), month: Number(r.month) })));
+    res.json(months);
+  } catch (err) {
+    console.error('Failed to fetch available months', err);
+    res.status(500).send();
+  }
 });
 
 app.post('/api/reports/generate', async (req, res) => {
