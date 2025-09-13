@@ -3,9 +3,12 @@ import { PubSub } from '@google-cloud/pubsub';
 import { Datastore } from '@google-cloud/datastore';
 import { Pool } from 'pg';
 import { buildReportId, monthlyReportSchema, reportFiltersSchema, availableMonthsSchema, PUBSUB_TOPICS } from 'shared';
+import { appLimiter } from '../../../packages/shared/src/middleware/rateLimiter';
 
 const app = express();
 app.use(express.json());
+
+app.use('/', appLimiter);
 
 const projectId = process.env.GCLOUD_PROJECT || 'local-dev';
 const pubsub = new PubSub({ projectId });
