@@ -10,14 +10,19 @@
   "dependencies": {
     "@google-cloud/datastore": "^10.0.1",
     "@google-cloud/pubsub": "^5.2.0",
+    "cors": "^2.8.5",
     "express": "^5.1.0",
     "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
     "pg": "^8.11.3",
+    "pino": "^9.9.5",
     "shared": "workspace:*"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "@types/express": "^5.0.3",
     "@types/express-rate-limit": "^6.0.2",
+    "@types/helmet": "^4.0.0",
     "@types/pg": "^8.10.2",
     "ts-node-dev": "^2.0.0"
   }
