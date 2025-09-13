@@ -14,7 +14,7 @@ services:
   gcp-emulators:
     build:
       context: ..
-      dockerfile: gcp-emulators.Dockerfile
+      dockerfile: infra/gcp-emulators.Dockerfile
     ports:
       - '8085:8085'
       - '8086:8086'
@@ -30,9 +30,11 @@ services:
       - postgres-db
       - gcp-emulators
     environment:
+      GCLOUD_PROJECT: local-dev
       DATABASE_URL: postgres://postgres:postgres@postgres-db:5432/service_orders
       PUBSUB_EMULATOR_HOST: gcp-emulators:8085
       DATASTORE_EMULATOR_HOST: gcp-emulators:8086
+      METADATA_SERVER_DETECTION: none
     volumes:
       - ../apps/aggregator:/usr/src/app/apps/aggregator
 
@@ -47,8 +49,10 @@ services:
       - '3001:3001'
     environment:
       PORT: 3001
+      GCLOUD_PROJECT: local-dev
       DATABASE_URL: postgres://postgres:postgres@postgres-db:5432/service_orders
       PUBSUB_EMULATOR_HOST: gcp-emulators:8085
       DATASTORE_EMULATOR_HOST: gcp-emulators:8086
+      METADATA_SERVER_DETECTION: none
     volumes:
       - ../apps/api:/usr/src/app/apps/api

@@ -9,23 +9,23 @@ let pool: Pool;
 let pubsub: PubSub;
 let datastore: Datastore;
 
-export function getPool(): Pool {
+export const getPool = (): Pool => {
   if (!pool) {
     pool = new Pool({ connectionString });
   }
   return pool;
-}
+};
 
-export function getPubSub(): PubSub {
+export const getPubSub = (): PubSub => {
   if (!pubsub) {
     pubsub = new PubSub({ projectId });
   }
   return pubsub;
-}
+};
 
-export function getDatastore(): Datastore {
+export const getDatastore = (): Datastore => {
   if (!datastore) {
     datastore = new Datastore({ projectId });
   }
   return datastore;
-}
+};

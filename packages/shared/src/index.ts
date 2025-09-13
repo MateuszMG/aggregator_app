@@ -9,3 +9,4 @@ export {
 export { buildReportId } from './helpers';
 export { PUBSUB_TOPICS, getSubscriptionName, type PubSubTopic } from './pubsub';
 export { getPool, getPubSub, getDatastore } from './clients';
+export { logger } from './logger';

@@ -4,6 +4,6 @@ export const PUBSUB_TOPICS = {
 
 export type PubSubTopic = (typeof PUBSUB_TOPICS)[keyof typeof PUBSUB_TOPICS];
 
-export function getSubscriptionName(topic: PubSubTopic): string {
+export const getSubscriptionName = (topic: PubSubTopic): string => {
   return `${topic}-sub`;
-}
+};
