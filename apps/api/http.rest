@@ -1,0 +1,19 @@
+@host=http://localhost:3001
+
+### Health check
+GET {{host}}/health_check
+
+### List available report months
+GET {{host}}ing the API
+
+### Request report generation
+POST {{host}}/api/reports/generate
+Content-Type: application/json
+
+{
+  "year": 2024,
+  "month": 1
+}
+
+### Get a monthly report
+GET {{host}}/api/reports/monthly/2024/1

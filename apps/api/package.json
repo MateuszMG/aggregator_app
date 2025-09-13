@@ -9,6 +9,8 @@
   },
   "dependencies": {
     "express": "^5.1.0",
+    "@google-cloud/datastore": "^10.0.1",
+    "@google-cloud/pubsub": "^5.2.0",
     "shared": "workspace:*"
   },
   "devDependencies": {

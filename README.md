@@ -49,6 +49,10 @@ pnpm --filter api start
 
 ## Using the API
 
+The repository includes a request collection at `apps/api/http.rest` for use
+with tools like the 'REST Client extension'
+It contains ready-to-run examples for the endpoints below.
+
 Assuming the stack is running, interact with the service via HTTP:
 
 ### List months with completed orders
