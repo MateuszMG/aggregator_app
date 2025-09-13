@@ -8,6 +8,12 @@
     "build": "tsc -p tsconfig.json"
   },
   "dependencies": {
-    "zod": "^3.23.8"
+    "zod": "^3.23.8",
+    "@google-cloud/datastore": "^10.0.1",
+    "@google-cloud/pubsub": "^5.2.0",
+    "pg": "^8.11.3"
+  },
+  "devDependencies": {
+    "@types/pg": "^8.10.2"
   }
 }

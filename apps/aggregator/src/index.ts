@@ -1,15 +1,19 @@
-import { PubSub } from '@google-cloud/pubsub';
-import { Datastore } from '@google-cloud/datastore';
-import { Pool } from 'pg';
 import { getISOWeek, getISOWeekYear } from 'date-fns';
-import { buildReportId, monthlyReportSchema, reportFiltersSchema, PUBSUB_TOPICS, getSubscriptionName } from 'shared';
+import {
+  buildReportId,
+  monthlyReportSchema,
+  reportFiltersSchema,
+  PUBSUB_TOPICS,
+  getSubscriptionName,
+  getPool,
+  getPubSub,
+  getDatastore,
+} from 'shared';
 import { logger } from '../../api/src/middleware/logger';
 
-const projectId = process.env.GCLOUD_PROJECT || 'local-dev';
-const connectionString = process.env.DATABASE_URL;
-const pool = new Pool({ connectionString });
-const pubsub = new PubSub({ projectId });
-const datastore = new Datastore({ projectId });
+const pool = getPool();
+const pubsub = getPubSub();
+const datastore = getDatastore();
 
 interface MechanicPerformanceInternal {
   totalOrders: number;

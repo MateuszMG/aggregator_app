@@ -1,8 +1,14 @@
 import express, { NextFunction, Request, Response } from 'express';
-import { PubSub } from '@google-cloud/pubsub';
-import { Datastore } from '@google-cloud/datastore';
-import { Pool } from 'pg';
-import { buildReportId, monthlyReportSchema, reportFiltersSchema, availableMonthsSchema, PUBSUB_TOPICS } from 'shared';
+import {
+  buildReportId,
+  monthlyReportSchema,
+  reportFiltersSchema,
+  availableMonthsSchema,
+  PUBSUB_TOPICS,
+  getPubSub,
+  getDatastore,
+  getPool,
+} from 'shared';
 import { appLimiter } from './middleware/rateLimiter';
 import helmet from 'helmet';
 import cors from 'cors';
@@ -16,11 +22,9 @@ app.use('/', appLimiter);
 app.use(helmet());
 app.use(cors({ origin: true }));
 
-const projectId = process.env.GCLOUD_PROJECT || 'local-dev';
-const pubsub = new PubSub({ projectId });
-const datastore = new Datastore({ projectId });
-const connectionString = process.env.DATABASE_URL;
-const pool = new Pool({ connectionString });
+const pubsub = getPubSub();
+const datastore = getDatastore();
+const pool = getPool();
 
 app.use('/health_check', (req: Request, res: Response) => {
   logger.info('ok');
