@@ -9,6 +9,7 @@ import cors from 'cors';
 import { logger } from './middleware/logger';
 
 const app = express();
+app.disable('x-powered-by');
 app.use(express.json());
 
 app.use('/', appLimiter);
