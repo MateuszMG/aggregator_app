@@ -5,17 +5,22 @@ const mocks = vi.hoisted(() => ({
   getDatastore: vi.fn(),
   getPubSub: vi.fn(),
   loggerError: vi.fn(),
+  loggerInfo: vi.fn(),
   startSubscriber: vi.fn(),
   GenerateReportUseCase: vi.fn(),
   fetchOrders: vi.fn(),
   saveReport: vi.fn(),
+  gracefulShutdown: vi.fn(async (_signal, resources: any[]) => {
+    await Promise.all(resources.map((r: any) => r.close()));
+  }),
 }));
 
 vi.mock('shared', () => ({
   getPool: mocks.getPool,
   getDatastore: mocks.getDatastore,
   getPubSub: mocks.getPubSub,
-  logger: { error: mocks.loggerError },
+  logger: { error: mocks.loggerError, info: mocks.loggerInfo },
+  gracefulShutdown: mocks.gracefulShutdown,
 }));
 vi.mock('./interface/pubsub.subscriber', () => ({ startSubscriber: mocks.startSubscriber }));
 vi.mock('./application/generate-report.usecase', () => ({ GenerateReportUseCase: mocks.GenerateReportUseCase }));
@@ -25,6 +30,8 @@ vi.mock('./infrastructure/datastore.reportRepository', () => ({ saveReport: mock
 describe('main', () => {
   beforeEach(() => {
     vi.resetModules();
+    process.removeAllListeners('SIGINT');
+    process.removeAllListeners('SIGTERM');
     Object.values(mocks).forEach((m) => 'mockReset' in m && m.mockReset());
   });
 
@@ -32,10 +39,11 @@ describe('main', () => {
     const pool = {};
     const datastore = {};
     const pubsub = {};
+    const subscription = {};
     mocks.getPool.mockReturnValue(pool);
     mocks.getDatastore.mockReturnValue(datastore);
     mocks.getPubSub.mockReturnValue(pubsub);
-    mocks.startSubscriber.mockResolvedValue(undefined);
+    mocks.startSubscriber.mockResolvedValue(subscription);
     mocks.fetchOrders.mockImplementation(() => {});
     mocks.saveReport.mockImplementation(() => {});
 
@@ -57,6 +65,28 @@ describe('main', () => {
     expect(mocks.saveReport).toHaveBeenCalledWith(datastore, { test: true });
     expect(mocks.startSubscriber).toHaveBeenCalledWith(pubsub, useCaseInstance);
     expect(mocks.loggerError).not.toHaveBeenCalled();
+  });
+
+  it('cleans up resources on SIGINT', async () => {
+    const pool = { end: vi.fn().mockResolvedValue(undefined) } as any;
+    const pubsub = { close: vi.fn().mockResolvedValue(undefined) } as any;
+    const datastore = { close: vi.fn().mockResolvedValue(undefined) } as any;
+    const subscription = { close: vi.fn().mockResolvedValue(undefined) } as any;
+    mocks.getPool.mockReturnValue(pool);
+    mocks.getPubSub.mockReturnValue(pubsub);
+    mocks.getDatastore.mockReturnValue(datastore);
+    mocks.startSubscriber.mockResolvedValue(subscription);
+    mocks.GenerateReportUseCase.mockReturnValue({});
+
+    await import('./main');
+
+    process.emit('SIGINT');
+    await Promise.resolve();
+
+    expect(subscription.close).toHaveBeenCalled();
+    expect(pool.end).toHaveBeenCalled();
+    expect(pubsub.close).toHaveBeenCalled();
+    expect(datastore.close).toHaveBeenCalled();
   });
 
   it('logs and exits on failure', async () => {

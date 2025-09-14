@@ -1,5 +1,5 @@
 import { createApp } from './app';
-import { getPool, getPubSub, getDatastore, logger } from 'shared';
+import { getPool, getPubSub, getDatastore, logger, gracefulShutdown, type Closable } from 'shared';
 
 const port = Number(process.env.PORT) || 3001;
 const app = createApp();
@@ -7,38 +7,25 @@ const server = app.listen(port, () => {
   logger.info(`API listening on port ${port}`);
 });
 
-const shutdown = async (signal: NodeJS.Signals) => {
-  logger.info({ signal }, 'Shutdown signal received');
-  await new Promise<void>((resolve) => server.close(() => resolve()));
-  logger.info('HTTP server closed');
-
-  try {
-    await Promise.all([
-      getPool()
-        .end()
-        .catch((err) =>
-          logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to close database pool'),
-        ),
-      getPubSub()
-        .close()
-        .catch((err) =>
-          logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to close Pub/Sub client'),
-        ),
-      getDatastore()
-        .close()
-        .catch((err: { message: string }) =>
-          logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to close Datastore client'),
-        ),
-    ]);
-    logger.info('Cleanup complete');
-  } catch (err) {
-    logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Shutdown failed');
-  }
-};
+const resources: Closable[] = [
+  {
+    name: 'HTTP server',
+    close: () =>
+      new Promise<void>((resolve) =>
+        server.close(() => {
+          logger.info('HTTP server closed');
+          resolve();
+        }),
+      ),
+  },
+  { name: 'database pool', close: () => getPool().end() },
+  { name: 'Pub/Sub client', close: () => getPubSub().close() },
+  { name: 'Datastore client', close: () => getDatastore().close() },
+];
 
 process.on('SIGINT', () => {
-  void shutdown('SIGINT');
+  void gracefulShutdown('SIGINT', resources);
 });
 process.on('SIGTERM', () => {
-  void shutdown('SIGTERM');
+  void gracefulShutdown('SIGTERM', resources);
 });

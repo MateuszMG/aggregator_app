@@ -1,6 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-// Hoisted mocks so that vi.mock factories can access them
 const mocks = vi.hoisted(() => ({
   createApp: vi.fn(),
   getPool: vi.fn(),
@@ -9,6 +8,9 @@ const mocks = vi.hoisted(() => ({
   loggerInfo: vi.fn(),
   loggerError: vi.fn(),
   serverClose: vi.fn(),
+  gracefulShutdown: vi.fn(async (_signal, resources: any[]) => {
+    await Promise.all(resources.map((r: any) => r.close()));
+  }),
 }));
 
 vi.mock('./app', () => ({
@@ -20,6 +22,7 @@ vi.mock('shared', () => ({
   getPubSub: mocks.getPubSub,
   getDatastore: mocks.getDatastore,
   logger: { info: mocks.loggerInfo, error: mocks.loggerError },
+  gracefulShutdown: mocks.gracefulShutdown,
 }));
 
 describe('main', () => {
