@@ -71,9 +71,9 @@ export const createApp = () => {
 
   app.use('/api/reports', createReportsRouter({ pool, datastore, useCase, redis }));
 
-  app.get('/openapi.json', openApiHandler);
+  if (process.env.NODE_ENV !== 'production') {
+    app.get('/openapi.json', openApiHandler);
 
-  if (process.env.NODE_ENV === 'development') {
     import('swagger-ui-express')
       .then(({ serve, setup }) => {
         app.use('/docs', serve, setup(openApiSchema));
