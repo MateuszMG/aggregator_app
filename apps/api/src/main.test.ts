@@ -23,6 +23,7 @@ vi.mock('shared', () => ({
   getDatastore: mocks.getDatastore,
   logger: { info: mocks.loggerInfo, error: mocks.loggerError },
   gracefulShutdown: mocks.gracefulShutdown,
+  PORT: 3001,
 }));
 
 describe('main', () => {

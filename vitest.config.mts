@@ -5,6 +5,7 @@ export default defineConfig({
   plugins: [tsconfigPaths({ projects: ['./tsconfig.base.json'] })],
   test: {
     environment: 'node',
+    setupFiles: ['./vitest.setup.ts'],
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],

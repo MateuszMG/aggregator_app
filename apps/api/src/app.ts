@@ -5,7 +5,7 @@ import { appLimiter } from './middleware/rateLimiter';
 import { createReportsRouter } from './interface/reports.controller';
 import { PubSubPublisher } from './infrastructure/pubsub.publisher';
 import { GenerateReportUseCase } from './application/generate-report.usecase';
-import { getPool, getDatastore, getPubSub, getRedis, PUBSUB_TOPICS, getSubscriptionName } from 'shared';
+import { getPool, getDatastore, getPubSub, getRedis, PUBSUB_TOPICS, getSubscriptionName, envConfig } from 'shared';
 import { logger } from 'shared';
 import { openApiHandler, openApiSchema } from './openapi';
 
@@ -15,7 +15,7 @@ export const createApp = () => {
   app.use(express.json());
   app.use('/', appLimiter);
   app.use(helmet());
-  app.use(cors({ origin: true }));
+  app.use(cors({ origin: envConfig.ALLOWED_ORIGINS }));
 
   const pool = getPool();
   const datastore = getDatastore();

@@ -16,6 +16,12 @@ pnpm install
 
 ## Run with Docker
 
+Copy `.env.example` to `.env` and adjust values as needed:
+
+```bash
+cp .env.example .env
+```
+
 Build and start the full development stack:
 
 ```bash

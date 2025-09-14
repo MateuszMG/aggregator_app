@@ -1,10 +1,9 @@
 import { createApp } from './app';
-import { getPool, getPubSub, getDatastore, logger, gracefulShutdown, type Closable } from 'shared';
+import { getPool, getPubSub, getDatastore, logger, envConfig, gracefulShutdown, type Closable } from 'shared';
 
-const port = Number(process.env.PORT) || 3001;
 const app = createApp();
-const server = app.listen(port, () => {
-  logger.info(`API listening on port ${port}`);
+const server = app.listen(envConfig.PORT, () => {
+  logger.info(`API listening on port ${envConfig.PORT}`);
 });
 
 const resources: Closable[] = [

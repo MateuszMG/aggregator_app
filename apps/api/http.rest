@@ -19,8 +19,8 @@ Content-Type: application/json
 
 {
   "year": 2025,
-  "month": 5
+  "month": 6
 }
 
 ### Get a monthly report
-GET {{host}}/api/reports/monthly/2025/5
+GET {{host}}/api/reports/monthly/2025/4

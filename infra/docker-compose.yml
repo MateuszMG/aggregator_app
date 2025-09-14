@@ -34,13 +34,8 @@ services:
     depends_on:
       - postgres-db
       - gcp-emulators
-      - redis
-    environment:
-      GCLOUD_PROJECT: local-dev
-      DATABASE_URL: postgres://postgres:postgres@postgres-db:5432/service_orders
-      PUBSUB_EMULATOR_HOST: gcp-emulators:8085
-      DATASTORE_EMULATOR_HOST: gcp-emulators:8086
-      METADATA_SERVER_DETECTION: none
+    env_file:
+      - ../.env
     volumes:
       - ../apps/aggregator:/usr/src/app/apps/aggregator
 
@@ -54,12 +49,7 @@ services:
       - redis
     ports:
       - '3001:3001'
-    environment:
-      PORT: 3001
-      GCLOUD_PROJECT: local-dev
-      DATABASE_URL: postgres://postgres:postgres@postgres-db:5432/service_orders
-      PUBSUB_EMULATOR_HOST: gcp-emulators:8085
-      DATASTORE_EMULATOR_HOST: gcp-emulators:8086
-      METADATA_SERVER_DETECTION: none
+    env_file:
+      - ../.env
     volumes:
       - ../apps/api:/usr/src/app/apps/api

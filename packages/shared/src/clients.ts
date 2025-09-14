@@ -3,10 +3,11 @@ import { PubSub } from '@google-cloud/pubsub';
 import { Datastore } from '@google-cloud/datastore';
 import { createClient, type RedisClientType } from 'redis';
 import { logger } from './logger';
+import { envConfig } from './config';
 
-const projectId = process.env.GCLOUD_PROJECT || 'local-dev';
-const connectionString = process.env.DATABASE_URL;
-const redisUrl = process.env.REDIS_URL || 'redis://redis:6379';
+const projectId = envConfig.GCLOUD_PROJECT;
+const connectionString = envConfig.DATABASE_URL;
+const redisUrl = envConfig.REDIS_URL;
 
 let pool: Pool;
 let pubsub: PubSub;

@@ -4,9 +4,13 @@ describe('clients', () => {
   beforeEach(() => {
     vi.resetModules();
     vi.clearAllMocks();
-    delete process.env.GCLOUD_PROJECT;
-    delete process.env.DATABASE_URL;
-    delete process.env.REDIS_URL;
+    process.env.GCLOUD_PROJECT = 'proj';
+    process.env.DATABASE_URL = 'postgres://example.com/db';
+    process.env.REDIS_URL = 'redis://example:6379';
+    process.env.PORT = '3001';
+    process.env.RATE_LIMIT_MAX = '100';
+    process.env.RATE_LIMIT_WINDOW = '900000';
+    process.env.ALLOWED_ORIGINS = 'http://localhost';
   });
 
   it('creates a single pg pool instance', async () => {
@@ -19,11 +23,10 @@ describe('clients', () => {
     expect(p1).toBe(poolInstance);
     expect(p1).toBe(p2);
     expect(PoolMock).toHaveBeenCalledTimes(1);
-    expect(PoolMock).toHaveBeenCalledWith({ connectionString: undefined });
+    expect(PoolMock).toHaveBeenCalledWith({ connectionString: 'postgres://example.com/db' });
   });
 
   it('creates a single pubsub client with projectId', async () => {
-    process.env.GCLOUD_PROJECT = 'proj';
     const pubInstance = {};
     const PubSubMock = vi.fn(() => pubInstance);
     vi.doMock('@google-cloud/pubsub', () => ({ PubSub: PubSubMock }));
@@ -37,7 +40,6 @@ describe('clients', () => {
   });
 
   it('creates a single datastore client with projectId', async () => {
-    process.env.GCLOUD_PROJECT = 'proj';
     const dsInstance = {};
     const DatastoreMock = vi.fn(() => dsInstance);
     vi.doMock('@google-cloud/datastore', () => ({ Datastore: DatastoreMock }));
@@ -51,7 +53,6 @@ describe('clients', () => {
   });
 
   it('creates a single redis client with url', async () => {
-    process.env.REDIS_URL = 'redis://example:6379';
     const redisInstance = { on: vi.fn(), connect: vi.fn().mockResolvedValue(undefined) } as any;
     const createClientMock = vi.fn(() => redisInstance);
     vi.doMock('redis', () => ({ createClient: createClientMock }));
@@ -66,7 +67,6 @@ describe('clients', () => {
   });
 
   it('logs redis errors on connection failure', async () => {
-    process.env.REDIS_URL = 'redis://example:6379';
     const errorLogger = vi.fn();
     const redisInstance = {
       on: vi.fn(),
@@ -85,6 +85,7 @@ describe('clients', () => {
   });
 
   it('uses redis service as the default URL', async () => {
+    delete process.env.REDIS_URL;
     const redisInstance = { on: vi.fn(), connect: vi.fn().mockResolvedValue(undefined) } as any;
     const createClientMock = vi.fn(() => redisInstance);
     vi.doMock('redis', () => ({ createClient: createClientMock }));

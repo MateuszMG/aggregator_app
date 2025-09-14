@@ -1,6 +1,7 @@
 import rateLimit from 'express-rate-limit';
+import { envConfig } from 'shared';
 
 export const appLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
+  windowMs: envConfig.RATE_LIMIT_WINDOW,
+  max: envConfig.RATE_LIMIT_MAX,
 });
