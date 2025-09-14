@@ -25,6 +25,7 @@ describe('config', () => {
     expect(envConfig.AGGREGATOR_PORT).toBe(3002);
     expect(envConfig.ALLOWED_ORIGINS).toEqual(['http://localhost']);
     expect(envConfig.OTEL_EXPORTER_OTLP_ENDPOINT).toBe('http://localhost:4318/v1/traces');
+    expect(envConfig.REQUEST_BODY_LIMIT).toBe('1mb');
   });
 
   it('throws on missing variables', async () => {

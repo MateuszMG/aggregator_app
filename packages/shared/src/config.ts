@@ -11,6 +11,7 @@ const envSchema = z.object({
   PG_POOL_MAX: z.coerce.number().int().positive().default(10),
   PG_POOL_IDLE: z.coerce.number().int().nonnegative().default(10000),
   REPORTS_CACHE_TTL_SECONDS: z.coerce.number().int().positive().default(3600),
+  REQUEST_BODY_LIMIT: z.string().default('1mb'),
   ALLOWED_ORIGINS: z.string().transform((val) =>
     val
       .split(',')

@@ -8,3 +8,4 @@ process.env.ALLOWED_ORIGINS ??= 'http://localhost';
 process.env.PG_POOL_MAX ??= '10';
 process.env.PG_POOL_IDLE ??= '10000';
 process.env.AGGREGATOR_PORT ??= '3002';
+process.env.REQUEST_BODY_LIMIT ??= '1mb';

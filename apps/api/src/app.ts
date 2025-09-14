@@ -14,7 +14,7 @@ import { httpRequestDuration, register } from './metrics';
 export const createApp = () => {
   const app = express();
   app.disable('x-powered-by');
-  app.use(express.json());
+  app.use(express.json({ limit: envConfig.REQUEST_BODY_LIMIT }));
   app.use('/', appLimiter());
   app.use(helmet());
   app.use(cors({ origin: envConfig.ALLOWED_ORIGINS }));
