@@ -4,7 +4,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().url(),
   GCLOUD_PROJECT: z.string().default('local-dev'),
   REDIS_URL: z.string().url().default('redis://redis:6379'),
-  PORT: z.coerce.number().int().positive(),
+  API_PORT: z.coerce.number().int().positive(),
   AGGREGATOR_PORT: z.coerce.number().int().positive().default(3002),
   RATE_LIMIT_MAX: z.coerce.number().int().positive(),
   RATE_LIMIT_WINDOW: z.coerce.number().int().positive(),

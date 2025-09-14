@@ -1,7 +1,7 @@
 process.env.DATABASE_URL ??= 'postgres://postgres:postgres@postgres-db:5432/service_orders';
 process.env.GCLOUD_PROJECT ??= 'proj';
 process.env.REDIS_URL ??= 'redis://redis:6379';
-process.env.PORT ??= '3001';
+process.env.API_PORT ??= '3001';
 process.env.RATE_LIMIT_MAX ??= '100';
 process.env.RATE_LIMIT_WINDOW ??= '900000';
 process.env.ALLOWED_ORIGINS ??= 'http://localhost';

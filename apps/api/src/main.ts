@@ -3,9 +3,8 @@ import * as shared from 'shared';
 import type { Closable } from 'shared';
 
 const app = createApp();
-const port = Number(process.env.PORT ?? 3001);
-const server = app.listen(port, () => {
-  shared.logger.info(`API listening on port ${port}`);
+const server = app.listen(shared.envConfig.API_PORT, () => {
+  shared.logger.info(`API listening on port ${shared.envConfig.API_PORT}`);
 });
 
 const resources: Closable[] = [
