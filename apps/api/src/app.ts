@@ -7,6 +7,7 @@ import { PubSubPublisher } from './infrastructure/pubsub.publisher';
 import { GenerateReportUseCase } from './application/generate-report.usecase';
 import { getPool, getDatastore, getPubSub, getRedis, PUBSUB_TOPICS, getSubscriptionName } from 'shared';
 import { logger } from 'shared';
+import { openApiHandler, openApiSchema } from './openapi';
 
 export const createApp = () => {
   const app = express();
@@ -69,6 +70,16 @@ export const createApp = () => {
   });
 
   app.use('/api/reports', createReportsRouter({ pool, datastore, useCase, redis }));
+
+  app.get('/openapi.json', openApiHandler);
+
+  if (process.env.NODE_ENV === 'development') {
+    import('swagger-ui-express')
+      .then(({ serve, setup }) => {
+        app.use('/docs', serve, setup(openApiSchema));
+      })
+      .catch(() => {});
+  }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
     if (!err.logged) {

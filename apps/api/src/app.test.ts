@@ -122,4 +122,12 @@ describe('app integration', () => {
     expect(res.status).toBe(500);
     expect(logger.error).toHaveBeenCalled();
   });
+
+  it('serves openapi schema', async () => {
+    const app = createApp();
+    const res = await request(app).get('/openapi.json');
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('openapi', '3.0.0');
+    expect(res.body.paths).toHaveProperty('/health_check');
+  });
 });
