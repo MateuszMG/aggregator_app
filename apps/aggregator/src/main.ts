@@ -15,10 +15,9 @@ const main = async () => {
     { save: (report) => saveReport(datastore, report) },
   );
 
-  const subscription = await startSubscriber(pubsub, useCase);
+  await startSubscriber(pubsub, useCase);
 
   const resources: Closable[] = [
-    { name: 'subscription', close: () => subscription.close() },
     { name: 'database pool', close: () => pool.end() },
     { name: 'Pub/Sub client', close: () => pubsub.close() },
     { name: 'Datastore client', close: () => datastore.close() },
