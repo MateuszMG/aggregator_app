@@ -37,34 +37,6 @@ describe('reports controller', () => {
     expect(res.body).toEqual([{ year: 2024, month: 1 }]);
   });
 
-  it('uses UTC when querying available months', async () => {
-    const sequelize = { query: vi.fn().mockResolvedValue([]) } as any;
-    const app = createApp({
-      sequelize,
-      datastore: {},
-      useCase: { execute: vi.fn() },
-    });
-    await request(app).get('/available-months');
-    const [sql, opts] = (sequelize.query as any).mock.calls[0];
-    expect(sql).toContain('AT TIME ZONE $1');
-    expect(opts.bind).toEqual(['UTC']);
-  });
-
-  it('passes provided timezone as a parameter when listing months', async () => {
-    const sequelize = { query: vi.fn().mockResolvedValue([]) } as any;
-    const app = createApp({
-      sequelize,
-      datastore: {},
-      useCase: { execute: vi.fn() },
-    });
-    const tz = 'Europe/Paris';
-    await request(app).get(`/available-months?timezone=${encodeURIComponent(tz)}`);
-    const [sql, opts] = (sequelize.query as any).mock.calls[0];
-    expect(sql).toContain('AT TIME ZONE $1');
-    expect(sql).not.toContain(tz);
-    expect(opts.bind).toEqual([tz]);
-  });
-
   it('returns cached months when available', async () => {
     const sequelize = { query: vi.fn() } as any;
     const redis = {

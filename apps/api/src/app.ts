@@ -7,7 +7,6 @@ import { createHealthRouter } from './interface/health.controller';
 import { PubSubPublisher } from './infrastructure/pubsub.publisher';
 import { GenerateReportUseCase } from './application/generate-report.usecase';
 import { getSequelize, getDatastore, getPubSub, getRedis, envConfig } from 'shared';
-import { logger } from 'shared';
 import { openApiHandler, openApiSchema } from './openapi';
 import { httpRequestDuration, register } from './metrics';
 import { errorHandler } from 'shared';

@@ -26,7 +26,6 @@ export const createReportsRouter = ({ sequelize, datastore, useCase, redis }: De
   const router = Router();
 
   router.get('/available-months', async (req: Request, res: Response, next: NextFunction) => {
-    const timezone = typeof req.query.timezone === 'string' ? req.query.timezone : 'UTC';
     const cacheKey = 'available-months';
     const monthsFromCache = await getCached(
       redis,
@@ -40,12 +39,12 @@ export const createReportsRouter = ({ sequelize, datastore, useCase, redis }: De
     try {
       const rows = await sequelize.query(
         `SELECT DISTINCT
-           EXTRACT(YEAR FROM date_finished AT TIME ZONE $1) AS year,
-           EXTRACT(MONTH FROM date_finished AT TIME ZONE $1) AS month
+           EXTRACT(YEAR FROM date_finished) AS year,
+           EXTRACT(MONTH FROM date_finished) AS month
          FROM service_orders
          WHERE date_finished IS NOT NULL
          ORDER BY year, month`,
-        { type: QueryTypes.SELECT, bind: [timezone] },
+        { type: QueryTypes.SELECT },
       );
       const months = availableMonthsSchema.parse(
         (rows as any[]).map((r) => ({ year: Number(r.year), month: Number(r.month) })),
