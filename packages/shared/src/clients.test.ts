@@ -83,4 +83,13 @@ describe('clients', () => {
     expect(errorLogger).toHaveBeenCalledWith({ err: 'boom' }, 'Redis Client Error');
     expect(errorLogger).toHaveBeenCalledWith({ err: 'fail' }, 'Redis connection failed');
   });
+
+  it('uses redis service as the default URL', async () => {
+    const redisInstance = { on: vi.fn(), connect: vi.fn().mockResolvedValue(undefined) } as any;
+    const createClientMock = vi.fn(() => redisInstance);
+    vi.doMock('redis', () => ({ createClient: createClientMock }));
+    const { getRedis } = await import('./clients');
+    getRedis();
+    expect(createClientMock).toHaveBeenCalledWith({ url: 'redis://redis:6379' });
+  });
 });

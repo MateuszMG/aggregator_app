@@ -6,7 +6,7 @@ import { logger } from './logger';
 
 const projectId = process.env.GCLOUD_PROJECT || 'local-dev';
 const connectionString = process.env.DATABASE_URL;
-const redisUrl = process.env.REDIS_URL || 'redis://localhost:6379';
+const redisUrl = process.env.REDIS_URL || 'redis://redis:6379';
 
 let pool: Pool;
 let pubsub: PubSub;
