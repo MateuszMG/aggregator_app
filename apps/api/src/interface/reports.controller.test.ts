@@ -47,7 +47,7 @@ describe('reports controller', () => {
     await request(app).get('/available-months');
     const [sql, opts] = (sequelize.query as any).mock.calls[0];
     expect(sql).toContain('AT TIME ZONE $1');
-    expect(opts.replacements).toEqual(['UTC']);
+    expect(opts.bind).toEqual(['UTC']);
   });
 
   it('passes provided timezone as a parameter when listing months', async () => {
@@ -62,7 +62,7 @@ describe('reports controller', () => {
     const [sql, opts] = (sequelize.query as any).mock.calls[0];
     expect(sql).toContain('AT TIME ZONE $1');
     expect(sql).not.toContain(tz);
-    expect(opts.replacements).toEqual([tz]);
+    expect(opts.bind).toEqual([tz]);
   });
 
   it('returns cached months when available', async () => {

@@ -6,10 +6,10 @@ import { GenerateReportUseCase } from '../application/generate-report.usecase';
 import {
   availableMonthsSchema,
   buildReportId,
-  getCached,
-  logger,
   monthlyReportSchema,
   reportFiltersSchema,
+  logger,
+  getCached,
   setCached,
 } from 'shared';
 import type { RedisClientType } from 'redis';
@@ -45,7 +45,7 @@ export const createReportsRouter = ({ sequelize, datastore, useCase, redis }: De
          FROM service_orders
          WHERE date_finished IS NOT NULL
          ORDER BY year, month`,
-        { type: QueryTypes.SELECT, replacements: [timezone] },
+        { type: QueryTypes.SELECT, bind: [timezone] },
       );
       const months = availableMonthsSchema.parse(
         (rows as any[]).map((r) => ({ year: Number(r.year), month: Number(r.month) })),

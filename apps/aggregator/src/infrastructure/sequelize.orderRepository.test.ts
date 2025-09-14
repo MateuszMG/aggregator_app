@@ -12,12 +12,14 @@ describe('fetchOrders', () => {
     expect(query).toHaveBeenCalledTimes(2);
     const args1 = query.mock.calls[0];
     const args2 = query.mock.calls[1];
-    expect(args1[1].replacements[0]).toMatch('2024-01-01');
-    expect(args1[1].replacements[1]).toMatch('2024-02-01');
+    expect(args1[1].bind[0]).toMatch('2024-01-01');
+    expect(args1[1].bind[1]).toMatch('2024-02-01');
     expect(args1[0]).toContain("so.date_finished AT TIME ZONE 'UTC' >= $1");
     expect(args1[0]).toContain("so.date_finished AT TIME ZONE 'UTC' < $2");
-    expect(args2[1].replacements[0]).toMatch('2024-01-01');
-    expect(args2[1].replacements[1]).toMatch('2024-02-01');
+    expect(args2[1].bind[0]).toMatch('2024-01-01');
+    expect(args2[1].bind[1]).toMatch('2024-02-01');
+    expect(args2[0]).toContain("date_finished AT TIME ZONE 'UTC'");
+    expect(args2[0]).toContain("to_char(date_finished AT TIME ZONE 'UTC', 'IYYY-IW')");
     expect(result).toEqual({
       mechanicPerformance: { m1: { totalOrders: 1 } },
       weeklyThroughput: { '2024-01': 1 },

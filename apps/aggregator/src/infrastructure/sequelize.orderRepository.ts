@@ -47,7 +47,7 @@ export const fetchOrders = async (sequelize: Sequelize, year: number, month: num
     FROM m`;
 
   const mechanicRows = await sequelize.query(mechanicQuery, {
-    replacements: [formatISO(startDate), formatISO(endDate)],
+    bind: [formatISO(startDate), formatISO(endDate)],
     type: QueryTypes.SELECT,
   });
   const mechanicPerformance: Record<string, MechanicPerformance> = (mechanicRows[0] as any)?.mechanic_performance ?? {};
@@ -63,7 +63,7 @@ export const fetchOrders = async (sequelize: Sequelize, year: number, month: num
     ) w`;
 
   const weeklyRows = await sequelize.query(weeklyQuery, {
-    replacements: [formatISO(startDate), formatISO(endDate)],
+    bind: [formatISO(startDate), formatISO(endDate)],
     type: QueryTypes.SELECT,
   });
   const weeklyThroughput: Record<string, number> = (weeklyRows[0] as any)?.weekly_throughput ?? {};
