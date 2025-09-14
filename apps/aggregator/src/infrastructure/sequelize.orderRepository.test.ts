@@ -22,6 +22,19 @@ describe('fetchOrders', () => {
     });
   });
 
+  it('uses UTC weeks for weekly throughput', async () => {
+    const query = vi
+      .fn()
+      .mockResolvedValueOnce([{ mechanic_performance: {} }])
+      .mockResolvedValueOnce([{ weekly_throughput: {} }]);
+    const sequelize = { query } as any;
+    await fetchOrders(sequelize, 2024, 1);
+    const weeklyQuery = query.mock.calls[1][0] as string;
+    expect(weeklyQuery).toContain("to_char(date_finished AT TIME ZONE 'UTC', 'IYYY-IW')");
+    expect(weeklyQuery).toContain("date_finished AT TIME ZONE 'UTC' >= $1");
+    expect(weeklyQuery).toContain("date_finished AT TIME ZONE 'UTC' < $2");
+  });
+
   it('throws when the query fails', async () => {
     const error = new Error('query fail');
     const query = vi.fn().mockRejectedValue(error);

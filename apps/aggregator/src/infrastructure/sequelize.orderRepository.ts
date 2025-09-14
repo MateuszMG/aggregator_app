@@ -55,10 +55,10 @@ export const fetchOrders = async (sequelize: Sequelize, year: number, month: num
   const weeklyQuery = `
     SELECT jsonb_object_agg(week, orders) AS weekly_throughput
     FROM (
-      SELECT to_char(date_finished, 'IYYY-IW') AS week,
+      SELECT to_char(date_finished AT TIME ZONE 'UTC', 'IYYY-IW') AS week,
              COUNT(*)::int AS orders
       FROM service_orders
-      WHERE date_finished >= $1 AND date_finished < $2
+      WHERE date_finished AT TIME ZONE 'UTC' >= $1 AND date_finished AT TIME ZONE 'UTC' < $2
       GROUP BY week
     ) w`;
 
