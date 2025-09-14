@@ -40,7 +40,15 @@ const main = async () => {
     { name: 'subscription', close: () => subscription.close() },
     { name: 'database pool', close: () => pool.end() },
     { name: 'Pub/Sub client', close: () => pubsub.close() },
-    { name: 'Datastore client', close: () => datastore.close() },
+    {
+      name: 'Datastore client',
+      close: async () => {
+        const ds = datastore as { close?: () => Promise<void> };
+        if (typeof ds.close === 'function') {
+          await ds.close();
+        }
+      },
+    },
     { name: 'metrics server', close: () => new Promise((resolve) => metricsServer.close(resolve as any)) },
   ];
 

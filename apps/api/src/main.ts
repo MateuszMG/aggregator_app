@@ -20,7 +20,15 @@ const resources: Closable[] = [
   },
   { name: 'database pool', close: () => shared.getPool().end() },
   { name: 'Pub/Sub client', close: () => shared.getPubSub().close() },
-  { name: 'Datastore client', close: () => shared.getDatastore().close() },
+  {
+    name: 'Datastore client',
+    close: async () => {
+      const datastore = shared.getDatastore() as { close?: () => Promise<void> };
+      if (typeof datastore.close === 'function') {
+        await datastore.close();
+      }
+    },
+  },
 ];
 
 process.on('SIGINT', () => {
