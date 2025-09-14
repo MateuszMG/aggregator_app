@@ -83,6 +83,15 @@ curl http://localhost:3001/api/reports/monthly/2025/7
 
 Each endpoint returns JSON. Report generation is asynchronous—after calling `generate`, use the `monthly` endpoint to fetch the report once ready.
 
+## Metrics
+
+Both services expose Prometheus metrics.
+
+- **API** – visit `http://localhost:3001/metrics`.
+- **Aggregator** – metrics are available at `http://localhost:3002/metrics`. The Docker setup already exposes this port.
+
+Point your Prometheus server at these endpoints to enable scraping.
+
 ## Stop and Clean Up
 
 When you are finished working with the application, shut down all running services.

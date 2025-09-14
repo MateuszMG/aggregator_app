@@ -1,9 +1,10 @@
-import { PubSub } from '@google-cloud/pubsub';
+import { PubSub, type Subscription } from '@google-cloud/pubsub';
 import { getSubscriptionName, PUBSUB_TOPICS, reportFiltersSchema } from 'shared';
 import { GenerateReportUseCase } from '../application/generate-report.usecase';
 import { logger } from 'shared';
+import { pubsubMessagesProcessed } from '../metrics';
 
-export const startSubscriber = async (pubsub: PubSub, useCase: GenerateReportUseCase): Promise<void> => {
+export const startSubscriber = async (pubsub: PubSub, useCase: GenerateReportUseCase): Promise<Subscription> => {
   const topicName = PUBSUB_TOPICS.GENERATE_REPORT_REQUESTS;
   const subscriptionName = getSubscriptionName(topicName);
   const [topic] = await pubsub.topic(topicName).get({ autoCreate: true });
@@ -14,6 +15,7 @@ export const startSubscriber = async (pubsub: PubSub, useCase: GenerateReportUse
       const payload = JSON.parse(message.data.toString());
       const { year, month } = reportFiltersSchema.parse(payload);
       await useCase.execute(year, month);
+      pubsubMessagesProcessed.inc();
       message.ack();
       logger.info(`Report for ${year}-${month} generated`);
     } catch (err) {
@@ -23,4 +25,5 @@ export const startSubscriber = async (pubsub: PubSub, useCase: GenerateReportUse
   });
 
   logger.info('Aggregator service listening for messages...');
+  return subscription;
 };

@@ -8,6 +8,7 @@ import { GenerateReportUseCase } from './application/generate-report.usecase';
 import { getPool, getDatastore, getPubSub, getRedis, PUBSUB_TOPICS, getSubscriptionName, envConfig } from 'shared';
 import { logger } from 'shared';
 import { openApiHandler, openApiSchema } from './openapi';
+import { httpRequestDuration, register } from './metrics';
 
 export const createApp = () => {
   const app = express();
@@ -16,6 +17,14 @@ export const createApp = () => {
   app.use('/', appLimiter);
   app.use(helmet());
   app.use(cors({ origin: envConfig.ALLOWED_ORIGINS }));
+
+  app.use((req, res, next) => {
+    const end = httpRequestDuration.startTimer({ method: req.method, route: req.path });
+    res.on('finish', () => {
+      end({ status_code: res.statusCode });
+    });
+    next();
+  });
 
   const pool = getPool();
   const datastore = getDatastore();
@@ -72,6 +81,11 @@ export const createApp = () => {
   app.use('/api/reports', createReportsRouter({ pool, datastore, useCase, redis }));
 
   if (process.env.NODE_ENV !== 'production') {
+    app.get('/metrics', async (_req: Request, res: Response) => {
+      res.set('Content-Type', register.contentType);
+      res.end(await register.metrics());
+    });
+
     app.get('/openapi.json', openApiHandler);
 
     import('swagger-ui-express')
