@@ -1,48 +1,48 @@
-version: 2
-updates:
-  # Root workspace
-  - package-ecosystem: 'npm'
-    directory: '/'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
-      time: '09:00'
-      timezone: 'UTC'
-    commit-message:
-      prefix: 'deps(npm)'
-    open-pull-requests-limit: 10
+# version: 2
+# updates:
+#   # Root workspace
+#   - package-ecosystem: 'npm'
+#     directory: '/'
+#     schedule:
+#       interval: 'weekly'
+#       day: 'monday'
+#       time: '09:00'
+#       timezone: 'UTC'
+#     commit-message:
+#       prefix: 'deps(npm)'
+#     open-pull-requests-limit: 10
 
-  # Apps
-  - package-ecosystem: 'npm'
-    directory: '/apps/aggregator'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
-      time: '09:00'
-      timezone: 'UTC'
-    commit-message:
-      prefix: 'deps(npm)'
-    open-pull-requests-limit: 10
+#   # Apps
+#   - package-ecosystem: 'npm'
+#     directory: '/apps/aggregator'
+#     schedule:
+#       interval: 'weekly'
+#       day: 'monday'
+#       time: '09:00'
+#       timezone: 'UTC'
+#     commit-message:
+#       prefix: 'deps(npm)'
+#     open-pull-requests-limit: 10
 
-  - package-ecosystem: 'npm'
-    directory: '/apps/api'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
-      time: '09:00'
-      timezone: 'UTC'
-    commit-message:
-      prefix: 'deps(npm)'
-    open-pull-requests-limit: 10
+#   - package-ecosystem: 'npm'
+#     directory: '/apps/api'
+#     schedule:
+#       interval: 'weekly'
+#       day: 'monday'
+#       time: '09:00'
+#       timezone: 'UTC'
+#     commit-message:
+#       prefix: 'deps(npm)'
+#     open-pull-requests-limit: 10
 
-  # Shared packages
-  - package-ecosystem: 'npm'
-    directory: '/packages/shared'
-    schedule:
-      interval: 'weekly'
-      day: 'monday'
-      time: '09:00'
-      timezone: 'UTC'
-    commit-message:
-      prefix: 'deps(npm)'
-    open-pull-requests-limit: 10
+#   # Shared packages
+#   - package-ecosystem: 'npm'
+#     directory: '/packages/shared'
+#     schedule:
+#       interval: 'weekly'
+#       day: 'monday'
+#       time: '09:00'
+#       timezone: 'UTC'
+#     commit-message:
+#       prefix: 'deps(npm)'
+#     open-pull-requests-limit: 10
