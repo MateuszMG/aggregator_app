@@ -9,7 +9,7 @@ describe('gracefulShutdown', () => {
   it('closes all resources and logs success', async () => {
     const info = vi.fn();
     const error = vi.fn();
-    vi.doMock('./logger', () => ({ logger: { info, error } }));
+    vi.doMock('../middleware/logger', () => ({ logger: { info, error } }));
     const { gracefulShutdown } = await import('./shutdown');
 
     const res1 = { name: 'res1', close: vi.fn().mockResolvedValue(undefined) };
@@ -27,7 +27,7 @@ describe('gracefulShutdown', () => {
   it('logs errors for failing resources but completes', async () => {
     const info = vi.fn();
     const error = vi.fn();
-    vi.doMock('./logger', () => ({ logger: { info, error } }));
+    vi.doMock('../middleware/logger', () => ({ logger: { info, error } }));
     const { gracefulShutdown } = await import('./shutdown');
 
     const ok = { name: 'ok', close: vi.fn().mockResolvedValue(undefined) };
@@ -45,7 +45,7 @@ describe('gracefulShutdown', () => {
   it('logs shutdown failure on unexpected errors', async () => {
     const info = vi.fn();
     const error = vi.fn();
-    vi.doMock('./logger', () => ({ logger: { info, error } }));
+    vi.doMock('../middleware/logger', () => ({ logger: { info, error } }));
     const { gracefulShutdown } = await import('./shutdown');
 
     const bad = {

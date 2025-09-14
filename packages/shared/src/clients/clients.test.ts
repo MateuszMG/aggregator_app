@@ -19,7 +19,7 @@ describe('clients', () => {
     const sequelizeInstance = {};
     const SequelizeMock = vi.fn(() => sequelizeInstance);
     vi.doMock('sequelize', () => ({ Sequelize: SequelizeMock }));
-    const { getSequelize } = await import('./clients');
+    const { getSequelize } = await import('../clients/clients');
     const s1 = getSequelize();
     const s2 = getSequelize();
     expect(s1).toBe(sequelizeInstance);
@@ -36,7 +36,7 @@ describe('clients', () => {
     const pubInstance = {};
     const PubSubMock = vi.fn(() => pubInstance);
     vi.doMock('@google-cloud/pubsub', () => ({ PubSub: PubSubMock }));
-    const { getPubSub } = await import('./clients');
+    const { getPubSub } = await import('../clients/clients');
     const c1 = getPubSub();
     const c2 = getPubSub();
     expect(c1).toBe(pubInstance);
@@ -49,7 +49,7 @@ describe('clients', () => {
     const dsInstance = {};
     const DatastoreMock = vi.fn(() => dsInstance);
     vi.doMock('@google-cloud/datastore', () => ({ Datastore: DatastoreMock }));
-    const { getDatastore } = await import('./clients');
+    const { getDatastore } = await import('../clients/clients');
     const d1 = getDatastore();
     const d2 = getDatastore();
     expect(d1).toBe(dsInstance);
@@ -62,7 +62,7 @@ describe('clients', () => {
     const redisInstance = { on: vi.fn(), connect: vi.fn().mockResolvedValue(undefined) } as any;
     const createClientMock = vi.fn(() => redisInstance);
     vi.doMock('redis', () => ({ createClient: createClientMock }));
-    const { getRedis } = await import('./clients');
+    const { getRedis } = await import('../clients/clients');
     const r1 = getRedis();
     const r2 = getRedis();
     expect(r1).toBe(redisInstance);
@@ -80,8 +80,8 @@ describe('clients', () => {
     } as any;
     const createClientMock = vi.fn(() => redisInstance);
     vi.doMock('redis', () => ({ createClient: createClientMock }));
-    vi.doMock('./logger', () => ({ logger: { error: errorLogger } }));
-    const { getRedis } = await import('./clients');
+    vi.doMock('../middleware/logger', () => ({ logger: { error: errorLogger } }));
+    const { getRedis } = await import('../clients/clients');
     getRedis();
     await Promise.resolve();
     const handler = redisInstance.on.mock.calls[0][1];
@@ -95,7 +95,7 @@ describe('clients', () => {
     const redisInstance = { on: vi.fn(), connect: vi.fn().mockResolvedValue(undefined) } as any;
     const createClientMock = vi.fn(() => redisInstance);
     vi.doMock('redis', () => ({ createClient: createClientMock }));
-    const { getRedis } = await import('./clients');
+    const { getRedis } = await import('../clients/clients');
     getRedis();
     expect(createClientMock).toHaveBeenCalledWith({ url: 'redis://redis:6379' });
   });

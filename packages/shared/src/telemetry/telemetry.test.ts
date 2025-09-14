@@ -43,13 +43,13 @@ describe('initTelemetry', () => {
     vi.doMock('opentelemetry-instrumentation-pubsub', () => ({
       PubSubInstrumentation,
     }));
-    vi.doMock('./config', () => ({
+    vi.doMock('../config/config', () => ({
       envConfig: {
         OTEL_EXPORTER_OTLP_ENDPOINT: 'http://collector',
         OTEL_EXPORTER_OTLP_HEADERS: 'a=b, c=d',
       },
     }));
-    vi.doMock('./logger', () => ({ logger: { info, error } }));
+    vi.doMock('../middleware/logger', () => ({ logger: { info, error } }));
 
     const onceSpy = vi.spyOn(process, 'once').mockImplementation(() => process);
 
@@ -116,10 +116,10 @@ describe('initTelemetry', () => {
     vi.doMock('opentelemetry-instrumentation-pubsub', () => ({
       PubSubInstrumentation,
     }));
-    vi.doMock('./config', () => ({
+    vi.doMock('../config/config', () => ({
       envConfig: { OTEL_EXPORTER_OTLP_ENDPOINT: 'http://collector' },
     }));
-    vi.doMock('./logger', () => ({ logger: { info, error } }));
+    vi.doMock('../middleware/logger', () => ({ logger: { info, error } }));
 
     const onceSpy = vi.spyOn(process, 'once').mockImplementation(() => process);
 
