@@ -14,7 +14,7 @@ export const createApp = () => {
   const app = express();
   app.disable('x-powered-by');
   app.use(express.json());
-  app.use('/', appLimiter);
+  app.use('/', appLimiter());
   app.use(helmet());
   app.use(cors({ origin: envConfig.ALLOWED_ORIGINS }));
 

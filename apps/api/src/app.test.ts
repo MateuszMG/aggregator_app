@@ -16,6 +16,11 @@ const redis = {
   get: vi.fn().mockResolvedValue(null),
   set: vi.fn().mockResolvedValue(undefined),
   ping: vi.fn().mockResolvedValue('PONG'),
+  sendCommand: vi
+    .fn()
+    .mockImplementation((args: string[]) =>
+      Array.isArray(args) && args[0] === 'SCRIPT' ? Promise.resolve('sha') : Promise.resolve([1, 1]),
+    ),
 } as any;
 
 vi.mock('shared', async () => {
