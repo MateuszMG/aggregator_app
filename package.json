@@ -15,8 +15,8 @@
     "test:watch": "vitest --watch"
   },
   "dependencies": {
-    "redis": "^4.7.0",
-    "prom-client": "^15.1.2"
+    "prom-client": "^15.1.2",
+    "redis": "^4.7.0"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",
