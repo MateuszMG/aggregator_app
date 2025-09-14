@@ -34,6 +34,7 @@ services:
     depends_on:
       - postgres-db
       - gcp-emulators
+      - redis
     env_file:
       - ../.env
     volumes:

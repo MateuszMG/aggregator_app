@@ -5,3 +5,5 @@ process.env.PORT = process.env.PORT || '3001';
 process.env.RATE_LIMIT_MAX = process.env.RATE_LIMIT_MAX || '100';
 process.env.RATE_LIMIT_WINDOW = process.env.RATE_LIMIT_WINDOW || '900000';
 process.env.ALLOWED_ORIGINS = process.env.ALLOWED_ORIGINS || 'http://localhost';
+process.env.PG_POOL_MAX = process.env.PG_POOL_MAX || '10';
+process.env.PG_POOL_IDLE = process.env.PG_POOL_IDLE || '10000';

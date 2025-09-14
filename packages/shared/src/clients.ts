@@ -7,6 +7,8 @@ import { envConfig } from './config';
 
 const projectId = envConfig.GCLOUD_PROJECT;
 const connectionString = envConfig.DATABASE_URL;
+const max = envConfig.PG_POOL_MAX;
+const idleTimeoutMillis = envConfig.PG_POOL_IDLE;
 const redisUrl = envConfig.REDIS_URL;
 
 let pool: Pool;
@@ -16,7 +18,7 @@ let redis: RedisClientType;
 
 export const getPool = (): Pool => {
   if (!pool) {
-    pool = new Pool({ connectionString });
+    pool = new Pool({ connectionString, max, idleTimeoutMillis });
   }
   return pool;
 };

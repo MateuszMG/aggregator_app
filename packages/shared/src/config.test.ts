@@ -7,6 +7,8 @@ const validEnv = {
   PORT: '3001',
   RATE_LIMIT_MAX: '100',
   RATE_LIMIT_WINDOW: '900000',
+  PG_POOL_MAX: '10',
+  PG_POOL_IDLE: '10000',
   ALLOWED_ORIGINS: 'http://localhost',
 };
 

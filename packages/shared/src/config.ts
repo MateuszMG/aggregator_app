@@ -7,6 +7,8 @@ const envSchema = z.object({
   PORT: z.coerce.number().int().positive(),
   RATE_LIMIT_MAX: z.coerce.number().int().positive(),
   RATE_LIMIT_WINDOW: z.coerce.number().int().positive(),
+  PG_POOL_MAX: z.coerce.number().int().positive().default(10),
+  PG_POOL_IDLE: z.coerce.number().int().nonnegative().default(10000),
   ALLOWED_ORIGINS: z.string().transform((val) =>
     val
       .split(',')

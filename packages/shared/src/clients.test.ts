@@ -10,6 +10,8 @@ describe('clients', () => {
     process.env.PORT = '3001';
     process.env.RATE_LIMIT_MAX = '100';
     process.env.RATE_LIMIT_WINDOW = '900000';
+    process.env.PG_POOL_MAX = '20';
+    process.env.PG_POOL_IDLE = '5000';
     process.env.ALLOWED_ORIGINS = 'http://localhost';
   });
 
@@ -23,7 +25,11 @@ describe('clients', () => {
     expect(p1).toBe(poolInstance);
     expect(p1).toBe(p2);
     expect(PoolMock).toHaveBeenCalledTimes(1);
-    expect(PoolMock).toHaveBeenCalledWith({ connectionString: 'postgres://example.com/db' });
+    expect(PoolMock).toHaveBeenCalledWith({
+      connectionString: 'postgres://example.com/db',
+      max: 20,
+      idleTimeoutMillis: 5000,
+    });
   });
 
   it('creates a single pubsub client with projectId', async () => {
