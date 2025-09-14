@@ -7,10 +7,10 @@ This project showcases an event-driven, hexagonal architecture for generating mo
 - Dockerized **api** and **aggregator** services
 - Event-driven and Hexagonal Architecture
 - Google Cloud emulators for `@google-cloud/pubsub` and `@google-cloud/datastore`
-- PostgreSQL database
-- OpenAPI documentation served at `http://localhost:3001/openapi.json`
-- Metrics with Prometheus
-- Distributed tracing via OpenTelemetry
+- PostgreSQL database + Sequelize ORM
+- OpenAPI documentation served at `http://localhost:3001/openapi.json` & `http://localhost:3001/docs`
+- Metrics with Prometheus `http://localhost:3001/metrics` & `http://localhost:3002/metrics`
+- Distributed tracing via OpenTelemetry `http://localhost:16686` (run `bash docker run --rm -p 4318:4318 -p 16686:16686 jaegertracing/all-in-one`)
 - Redis caching layer
 - GitHub Actions for CI/CD
 - Vitest tests with coverage above 80%
