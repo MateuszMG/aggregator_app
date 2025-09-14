@@ -8,13 +8,7 @@ export default defineConfig({
     coverage: {
       provider: 'v8',
       reporter: ['text', 'html'],
-      exclude: [
-        'vitest.config.{ts,js,mts}',
-        'apps/*/src/main.ts',
-        'apps/api/src/app.ts',
-        'apps/api/src/middleware/*.ts',
-        'packages/shared/src/clients.ts',
-      ],
+      exclude: ['vitest.config.{ts,js,mts}', 'apps/api/src/main.ts'],
       thresholds: {
         statements: 80,
         branches: 80,

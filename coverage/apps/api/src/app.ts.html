@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for packages/shared/src/validations.ts</title>
+    <title>Code coverage report for apps/api/src/app.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">packages/shared/src</a> validations.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">apps/api/src</a> app.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">94.11% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/17</span>
+                <span class='fraction'>32/34</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">75% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>3/4</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>1/1</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">94.11% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>17/17</span>
+                <span class='fraction'>32/34</span>
             </div>
         
             
@@ -97,33 +97,15 @@
 <a name='L32'></a><a href='#L32'>32</a>
 <a name='L33'></a><a href='#L33'>33</a>
 <a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
@@ -131,40 +113,76 @@
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { z } from 'zod';
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import express, { NextFunction, Request, Response } from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import { appLimiter } from './middleware/rateLimiter';
+import { createReportsRouter } from './interface/reports.controller';
+import { PubSubPublisher } from './infrastructure/pubsub.publisher';
+import { GenerateReportUseCase } from './application/generate-report.usecase';
+import { getPool, getDatastore, getPubSub } from 'shared';
+import { logger } from 'shared';
 &nbsp;
-/**
- * Common schema for selecting a report by year and month.
- */
-export const reportFiltersSchema = z.object({
-  year: z.number().int().min(1980).max(2100),
-  month: z.number().int().min(1).max(12),
-});
-export type ReportFilters = z.infer&lt;typeof reportFiltersSchema&gt;;
+export const createApp = () =&gt; {
+  const app = express();
+  app.disable('x-powered-by');
+  app.use(express.json());
+  app.use('/', appLimiter);
+  app.use(helmet());
+  app.use(cors({ origin: true }));
 &nbsp;
-/**
- * Array schema representing available report months.
- * Reuses {@link reportFiltersSchema} for validating year/month pairs.
- */
-export const availableMonthsSchema = z.array(reportFiltersSchema);
-export type AvailableMonth = ReportFilters;
+  const pool = getPool();
+  const datastore = getDatastore();
+  const pubsub = getPubSub();
+  const publisher = new PubSubPublisher(pubsub);
+  const useCase = new GenerateReportUseCase(publisher);
 &nbsp;
-const mechanicPerformanceSchema = z.object({
-  totalOrders: z.number().int().nonnegative(),
-  averageHoursPerOrder: z.number().nonnegative(),
-  servicesBreakdown: z.record(z.number().int().nonnegative()),
-});
+  app.use('/health_check', (_req: Request, res: Response) =&gt; {
+    logger.info('ok');
+    res.json({ msg: 'ok health_check' });
+  });
 &nbsp;
-/**
- * Schema describing a stored monthly report.
- */
-export const monthlyReportSchema = z.object({
-  year: reportFiltersSchema.shape.year,
-  month: reportFiltersSchema.shape.month,
-  mechanicPerformance: z.record(mechanicPerformanceSchema),
-  weeklyThroughput: z.record(z.number().int().nonnegative()),
-});
-export type MonthlyReport = z.infer&lt;typeof monthlyReportSchema&gt;;
+  app.use('/api/reports', createReportsRouter({ pool, datastore, useCase }));
+&nbsp;
+  app.use((err: any, _req: Request, res: Response, _next: NextFunction) =&gt; {
+    if (!err.logged) <span class="branch-0 cbranch-no" title="branch not covered" >{</span>
+<span class="cstat-no" title="statement not covered" >      logger.error({ err: err instanceof Error ? err.message : String(err) });</span>
+<span class="cstat-no" title="statement not covered" >    }</span>
+    res.status(500).json({ error: 'Internal Server Error' });
+  });
+&nbsp;
+  return app;
+};
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->

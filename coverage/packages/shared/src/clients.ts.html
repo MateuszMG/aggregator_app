@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>Code coverage report for packages/shared/src/validations.ts</title>
+    <title>Code coverage report for packages/shared/src/clients.ts</title>
     <meta charset="utf-8" />
     <link rel="stylesheet" href="../../../prettify.css" />
     <link rel="stylesheet" href="../../../base.css" />
@@ -19,34 +19,34 @@
 <body>
 <div class='wrapper'>
     <div class='pad1'>
-        <h1><a href="../../../index.html">All files</a> / <a href="index.html">packages/shared/src</a> validations.ts</h1>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">packages/shared/src</a> clients.ts</h1>
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/17</span>
+                <span class='fraction'>26/26</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>7/7</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Functions</span>
-                <span class='fraction'>0/0</span>
+                <span class='fraction'>3/3</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>17/17</span>
+                <span class='fraction'>26/26</span>
             </div>
         
             
@@ -94,77 +94,68 @@
 <a name='L29'></a><a href='#L29'>29</a>
 <a name='L30'></a><a href='#L30'>30</a>
 <a name='L31'></a><a href='#L31'>31</a>
-<a name='L32'></a><a href='#L32'>32</a>
-<a name='L33'></a><a href='#L33'>33</a>
-<a name='L34'></a><a href='#L34'>34</a>
-<a name='L35'></a><a href='#L35'>35</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<a name='L32'></a><a href='#L32'>32</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
-<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { z } from 'zod';
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Pool } from 'pg';
+import { PubSub } from '@google-cloud/pubsub';
+import { Datastore } from '@google-cloud/datastore';
 &nbsp;
-/**
- * Common schema for selecting a report by year and month.
- */
-export const reportFiltersSchema = z.object({
-  year: z.number().int().min(1980).max(2100),
-  month: z.number().int().min(1).max(12),
-});
-export type ReportFilters = z.infer&lt;typeof reportFiltersSchema&gt;;
+const projectId = process.env.GCLOUD_PROJECT || 'local-dev';
+const connectionString = process.env.DATABASE_URL;
 &nbsp;
-/**
- * Array schema representing available report months.
- * Reuses {@link reportFiltersSchema} for validating year/month pairs.
- */
-export const availableMonthsSchema = z.array(reportFiltersSchema);
-export type AvailableMonth = ReportFilters;
+let pool: Pool;
+let pubsub: PubSub;
+let datastore: Datastore;
 &nbsp;
-const mechanicPerformanceSchema = z.object({
-  totalOrders: z.number().int().nonnegative(),
-  averageHoursPerOrder: z.number().nonnegative(),
-  servicesBreakdown: z.record(z.number().int().nonnegative()),
-});
+export const getPool = (): Pool =&gt; {
+  if (!pool) {
+    pool = new Pool({ connectionString });
+  }
+  return pool;
+};
 &nbsp;
-/**
- * Schema describing a stored monthly report.
- */
-export const monthlyReportSchema = z.object({
-  year: reportFiltersSchema.shape.year,
-  month: reportFiltersSchema.shape.month,
-  mechanicPerformance: z.record(mechanicPerformanceSchema),
-  weeklyThroughput: z.record(z.number().int().nonnegative()),
-});
-export type MonthlyReport = z.infer&lt;typeof monthlyReportSchema&gt;;
+export const getPubSub = (): PubSub =&gt; {
+  if (!pubsub) {
+    pubsub = new PubSub({ projectId });
+  }
+  return pubsub;
+};
+&nbsp;
+export const getDatastore = (): Datastore =&gt; {
+  if (!datastore) {
+    datastore = new Datastore({ projectId });
+  }
+  return datastore;
+};
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
