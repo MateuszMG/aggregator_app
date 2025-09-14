@@ -25,7 +25,7 @@ export const fetchOrders = async (sequelize: Sequelize, year: number, month: num
              SUM(so.hours_spent)::float AS service_hours
       FROM service_orders so
       JOIN service_definitions sd ON so.service_id = sd.service_id
-      WHERE so.date_finished >= $1 AND so.date_finished < $2
+      WHERE so.date_finished AT TIME ZONE 'UTC' >= $1 AND so.date_finished AT TIME ZONE 'UTC' < $2
       GROUP BY so.mechanic_id, sd.service_name
     ),
     m AS (

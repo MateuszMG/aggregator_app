@@ -14,6 +14,8 @@ describe('fetchOrders', () => {
     const args2 = query.mock.calls[1];
     expect(args1[1].replacements[0]).toMatch('2024-01-01');
     expect(args1[1].replacements[1]).toMatch('2024-02-01');
+    expect(args1[0]).toContain("so.date_finished AT TIME ZONE 'UTC' >= $1");
+    expect(args1[0]).toContain("so.date_finished AT TIME ZONE 'UTC' < $2");
     expect(args2[1].replacements[0]).toMatch('2024-01-01');
     expect(args2[1].replacements[1]).toMatch('2024-02-01');
     expect(result).toEqual({
