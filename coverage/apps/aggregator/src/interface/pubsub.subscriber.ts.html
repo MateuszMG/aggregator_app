@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">80% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>4/5</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/21</span>
+                <span class='fraction'>21/21</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -90,57 +90,57 @@
 <a name='L25'></a><a href='#L25'>25</a>
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { PubSub } from '@google-cloud/pubsub';
-<span class="cstat-no" title="statement not covered" >import { getSubscriptionName, PUBSUB_TOPICS, reportFiltersSchema } from 'shared';</span>
+import { getSubscriptionName, PUBSUB_TOPICS, reportFiltersSchema } from 'shared';
 import { GenerateReportUseCase } from '../application/generate-report.usecase';
-<span class="cstat-no" title="statement not covered" >import { logger } from 'shared';</span>
+import { logger } from 'shared';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export const startSubscriber = async (pubsub: PubSub, useCase: GenerateReportUseCase): Promise&lt;void&gt; =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  const topicName = PUBSUB_TOPICS.GENERATE_REPORT_REQUESTS;</span>
-<span class="cstat-no" title="statement not covered" >  const subscriptionName = getSubscriptionName(topicName);</span>
-<span class="cstat-no" title="statement not covered" >  const [topic] = await pubsub.topic(topicName).get({ autoCreate: true });</span>
-<span class="cstat-no" title="statement not covered" >  const [subscription] = await topic.subscription(subscriptionName).get({ autoCreate: true });</span>
+export const startSubscriber = async (pubsub: PubSub, useCase: GenerateReportUseCase): Promise&lt;void&gt; =&gt; {
+  const topicName = PUBSUB_TOPICS.GENERATE_REPORT_REQUESTS;
+  const subscriptionName = getSubscriptionName(topicName);
+  const [topic] = await pubsub.topic(topicName).get({ autoCreate: true });
+  const [subscription] = await topic.subscription(subscriptionName).get({ autoCreate: true });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  subscription.on('message', async (message) =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >    try {</span>
-<span class="cstat-no" title="statement not covered" >      const payload = JSON.parse(message.data.toString());</span>
-<span class="cstat-no" title="statement not covered" >      const { year, month } = reportFiltersSchema.parse(payload);</span>
-<span class="cstat-no" title="statement not covered" >      await useCase.execute(year, month);</span>
-<span class="cstat-no" title="statement not covered" >      message.ack();</span>
-<span class="cstat-no" title="statement not covered" >      logger.info(`Report for ${year}-${month} generated`);</span>
-<span class="cstat-no" title="statement not covered" >    } catch (err) {</span>
-<span class="cstat-no" title="statement not covered" >      logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to process message');</span>
-<span class="cstat-no" title="statement not covered" >      message.nack();</span>
-<span class="cstat-no" title="statement not covered" >    }</span>
-<span class="cstat-no" title="statement not covered" >  });</span>
+  subscription.on('message', async (message) =&gt; {
+    try {
+      const payload = JSON.parse(message.data.toString());
+      const { year, month } = reportFiltersSchema.parse(payload);
+      await useCase.execute(year, month);
+      message.ack();
+      logger.info(`Report for ${year}-${month} generated`);
+    } catch (err) {
+      logger.error({ err: err instanceof Error ? err.<span class="branch-0 cbranch-no" title="branch not covered" >message : String(err) }</span>, 'Failed to process message');
+      message.nack();
+    }
+  });
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  logger.info('Aggregator service listening for messages...');</span>
-<span class="cstat-no" title="statement not covered" >};</span>
+  logger.info('Aggregator service listening for messages...');
+};
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -148,7 +148,7 @@ import { GenerateReportUseCase } from '../application/generate-report.usecase';
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-14T05:58:04.860Z
+                at 2025-09-14T06:07:21.169Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>

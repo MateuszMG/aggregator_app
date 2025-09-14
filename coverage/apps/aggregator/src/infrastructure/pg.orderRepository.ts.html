@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
                 <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>2/2</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/10</span>
+                <span class='fraction'>10/10</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -86,7 +86,7 @@
 <a name='L21'></a><a href='#L21'>21</a>
 <a name='L22'></a><a href='#L22'>22</a>
 <a name='L23'></a><a href='#L23'>23</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -95,20 +95,20 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { Pool } from 'pg';
-<span class="cstat-no" title="statement not covered" >import { addMonths, formatISO, startOfMonth } from 'date-fns';</span>
+import { addMonths, formatISO, startOfMonth } from 'date-fns';
 &nbsp;
 export interface OrderRecord {
   mechanic_id: string;
@@ -117,18 +117,18 @@ export interface OrderRecord {
   date_finished: string | Date;
 }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export const fetchOrders = async (pool: Pool, year: number, month: number): Promise&lt;OrderRecord[]&gt; =&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  const startDate = startOfMonth(new Date(Date.UTC(year, month - 1, 1)));</span>
-<span class="cstat-no" title="statement not covered" >  const endDate = addMonths(startDate, 1);</span>
-<span class="cstat-no" title="statement not covered" >  const { rows } = await pool.query(</span>
-<span class="cstat-no" title="statement not covered" >    `SELECT so.mechanic_id, so.hours_spent, sd.service_name, so.date_finished</span>
+export const fetchOrders = async (pool: Pool, year: number, month: number): Promise&lt;OrderRecord[]&gt; =&gt; {
+  const startDate = startOfMonth(new Date(Date.UTC(year, month - 1, 1)));
+  const endDate = addMonths(startDate, 1);
+  const { rows } = await pool.query(
+    `SELECT so.mechanic_id, so.hours_spent, sd.service_name, so.date_finished
      FROM service_orders so
      JOIN service_definitions sd ON so.service_id = sd.service_id
      WHERE so.date_finished &gt;= $1 AND so.date_finished &lt; $2`,
-<span class="cstat-no" title="statement not covered" >    [formatISO(startDate), formatISO(endDate)],</span>
-<span class="cstat-no" title="statement not covered" >  );</span>
-<span class="cstat-no" title="statement not covered" >  return rows as OrderRecord[];</span>
-<span class="cstat-no" title="statement not covered" >};</span>
+    [formatISO(startDate), formatISO(endDate)],
+  );
+  return rows as OrderRecord[];
+};
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -136,7 +136,7 @@ export interface OrderRecord {
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-09-14T05:58:04.860Z
+                at 2025-09-14T06:07:21.169Z
             </div>
         <script src="../../../../prettify.js"></script>
         <script>
