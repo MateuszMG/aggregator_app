@@ -1,18 +1,18 @@
 import { Router, Request, Response } from 'express';
-import { Pool } from 'pg';
+import type { Sequelize } from 'sequelize';
 import { Datastore } from '@google-cloud/datastore';
 import { PubSub } from '@google-cloud/pubsub';
 import type { RedisClientType } from 'redis';
 import { PUBSUB_TOPICS, getSubscriptionName, logger } from 'shared';
 
 interface Deps {
-  pool: Pool;
+  sequelize: Sequelize;
   datastore: Datastore;
   pubsub: PubSub;
   redis: RedisClientType;
 }
 
-export const createHealthRouter = ({ pool, datastore, pubsub, redis }: Deps): Router => {
+export const createHealthRouter = ({ sequelize, datastore, pubsub, redis }: Deps): Router => {
   const router = Router();
 
   router.get('/', async (_req: Request, res: Response) => {
@@ -21,7 +21,7 @@ export const createHealthRouter = ({ pool, datastore, pubsub, redis }: Deps): Ro
       .then(() => true)
       .catch(() => false);
 
-    const databaseOk = await pool
+    const databaseOk = await sequelize
       .query('SELECT 1')
       .then(() => true)
       .catch(() => false);

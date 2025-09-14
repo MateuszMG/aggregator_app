@@ -15,20 +15,20 @@ describe('clients', () => {
     process.env.ALLOWED_ORIGINS = 'http://localhost';
   });
 
-  it('creates a single pg pool instance', async () => {
-    const poolInstance = {};
-    const PoolMock = vi.fn(() => poolInstance);
-    vi.doMock('pg', () => ({ Pool: PoolMock }));
-    const { getPool } = await import('./clients');
-    const p1 = getPool();
-    const p2 = getPool();
-    expect(p1).toBe(poolInstance);
-    expect(p1).toBe(p2);
-    expect(PoolMock).toHaveBeenCalledTimes(1);
-    expect(PoolMock).toHaveBeenCalledWith({
-      connectionString: 'postgres://example.com/db',
-      max: 20,
-      idleTimeoutMillis: 5000,
+  it('creates a single sequelize instance', async () => {
+    const sequelizeInstance = {};
+    const SequelizeMock = vi.fn(() => sequelizeInstance);
+    vi.doMock('sequelize', () => ({ Sequelize: SequelizeMock }));
+    const { getSequelize } = await import('./clients');
+    const s1 = getSequelize();
+    const s2 = getSequelize();
+    expect(s1).toBe(sequelizeInstance);
+    expect(s1).toBe(s2);
+    expect(SequelizeMock).toHaveBeenCalledTimes(1);
+    expect(SequelizeMock).toHaveBeenCalledWith('postgres://example.com/db', {
+      dialect: 'postgres',
+      pool: { max: 20, idle: 5000 },
+      logging: false,
     });
   });
 

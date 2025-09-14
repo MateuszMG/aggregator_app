@@ -6,7 +6,7 @@ import { createReportsRouter } from './interface/reports.controller';
 import { createHealthRouter } from './interface/health.controller';
 import { PubSubPublisher } from './infrastructure/pubsub.publisher';
 import { GenerateReportUseCase } from './application/generate-report.usecase';
-import { getPool, getDatastore, getPubSub, getRedis, envConfig } from 'shared';
+import { getSequelize, getDatastore, getPubSub, getRedis, envConfig } from 'shared';
 import { logger } from 'shared';
 import { openApiHandler, openApiSchema } from './openapi';
 import { httpRequestDuration, register } from './metrics';
@@ -15,7 +15,7 @@ import { HttpError, ValidationError, NotFoundError } from './errors';
 export const createApp = () => {
   const app = express();
   app.disable('x-powered-by');
-  app.use(express.json());
+  app.use(express.json({ limit: envConfig.REQUEST_BODY_LIMIT }));
   app.use('/', appLimiter());
   app.use(helmet());
   app.use(cors({ origin: envConfig.ALLOWED_ORIGINS }));
@@ -28,16 +28,16 @@ export const createApp = () => {
     next();
   });
 
-  const pool = getPool();
+  const sequelize = getSequelize();
   const datastore = getDatastore();
   const pubsub = getPubSub();
   const redis = getRedis();
   const publisher = new PubSubPublisher(pubsub);
   const useCase = new GenerateReportUseCase(publisher);
 
-  app.use('/health_check', createHealthRouter({ pool, datastore, pubsub, redis }));
+  app.use('/health_check', createHealthRouter({ sequelize, datastore, pubsub, redis }));
 
-  app.use('/api/reports', createReportsRouter({ pool, datastore, useCase, redis }));
+  app.use('/api/reports', createReportsRouter({ sequelize, datastore, useCase, redis }));
 
   if (process.env.NODE_ENV !== 'production') {
     app.get('/metrics', async (_req: Request, res: Response) => {

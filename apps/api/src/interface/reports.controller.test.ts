@@ -26,45 +26,49 @@ describe('reports controller', () => {
   };
 
   it('lists available months', async () => {
-    const pool = { query: vi.fn().mockResolvedValue({ rows: [{ year: 2024, month: 1 }] }) } as any;
-    const app = createApp({ pool, datastore: {}, useCase: { execute: vi.fn() } }, false);
+    const sequelize = { query: vi.fn().mockResolvedValue([{ year: 2024, month: 1 }]) } as any;
+    const app = createApp({
+      sequelize,
+      datastore: {},
+      useCase: { execute: vi.fn() },
+    });
     const res = await request(app).get('/available-months');
     expect(res.status).toBe(200);
     expect(res.body).toEqual([{ year: 2024, month: 1 }]);
   });
 
   it('returns cached months when available', async () => {
-    const pool = { query: vi.fn() } as any;
+    const sequelize = { query: vi.fn() } as any;
     const redis = {
       get: vi.fn().mockResolvedValue(JSON.stringify([{ year: 2024, month: 1 }])),
       set: vi.fn(),
     } as any;
-    const app = createApp({ pool, datastore: {}, useCase: { execute: vi.fn() }, redis });
+    const app = createApp({ sequelize, datastore: {}, useCase: { execute: vi.fn() }, redis }, false);
     const res = await request(app).get('/available-months');
     expect(res.status).toBe(200);
     expect(res.body).toEqual([{ year: 2024, month: 1 }]);
-    expect(pool.query).not.toHaveBeenCalled();
+    expect(sequelize.query).not.toHaveBeenCalled();
   });
 
   it('falls back to db when cache retrieval fails for months', async () => {
-    const pool = { query: vi.fn().mockResolvedValue({ rows: [] }) } as any;
+    const sequelize = { query: vi.fn().mockResolvedValue([]) } as any;
     const redis = {
       get: vi.fn().mockRejectedValue(new Error('cache get')),
       set: vi.fn().mockResolvedValue(undefined),
     } as any;
-    const app = createApp({ pool, datastore: {}, useCase: { execute: vi.fn() }, redis });
+    const app = createApp({ sequelize, datastore: {}, useCase: { execute: vi.fn() }, redis });
     const res = await request(app).get('/available-months');
     expect(res.status).toBe(200);
-    expect(pool.query).toHaveBeenCalled();
+    expect(sequelize.query).toHaveBeenCalled();
   });
 
   it('handles cache store errors when listing months', async () => {
-    const pool = { query: vi.fn().mockResolvedValue({ rows: [{ year: 2024, month: 1 }] }) } as any;
+    const sequelize = { query: vi.fn().mockResolvedValue([{ year: 2024, month: 1 }]) } as any;
     const redis = {
       get: vi.fn().mockResolvedValue(null),
       set: vi.fn().mockRejectedValue(new Error('cache set')),
     } as any;
-    const app = createApp({ pool, datastore: {}, useCase: { execute: vi.fn() }, redis });
+    const app = createApp({ sequelize, datastore: {}, useCase: { execute: vi.fn() }, redis });
     const res = await request(app).get('/available-months');
     expect(res.status).toBe(200);
     expect(redis.set).toHaveBeenCalled();
@@ -72,14 +76,16 @@ describe('reports controller', () => {
 
   it('publishes generate request', async () => {
     const execute = vi.fn().mockResolvedValue(undefined);
-    const app = createApp({ pool: { query: vi.fn() }, datastore: {}, useCase: { execute } }, false);
+
+    const app = createApp({ sequelize: { query: vi.fn() }, datastore: {}, useCase: { execute } }, false);
+
     const res = await request(app).post('/generate').send({ year: 2024, month: 5 });
     expect(res.status).toBe(202);
     expect(execute).toHaveBeenCalledWith({ year: 2024, month: 5 });
   });
 
   it('validates generate payload', async () => {
-    const app = createApp({ pool: { query: vi.fn() }, datastore: {}, useCase: { execute: vi.fn() } });
+    const app = createApp({ sequelize: { query: vi.fn() }, datastore: {}, useCase: { execute: vi.fn() } });
     const res = await request(app).post('/generate').send({ year: 2024, month: 13 });
     expect(res.status).toBe(400);
   });
@@ -87,7 +93,9 @@ describe('reports controller', () => {
   it('retrieves monthly report', async () => {
     const get = vi.fn().mockResolvedValue([{ year: 2024, month: 5, mechanicPerformance: {}, weeklyThroughput: {} }]);
     const datastore = { key: vi.fn(() => 'key'), get } as any;
-    const app = createApp({ pool: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() } }, false);
+
+    const app = createApp({ sequelize: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() } }, false);
+
     const res = await request(app).get('/monthly/2024/5');
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ year: 2024, month: 5, mechanicPerformance: {}, weeklyThroughput: {} });
@@ -101,7 +109,7 @@ describe('reports controller', () => {
         .mockResolvedValue(JSON.stringify({ year: 2024, month: 5, mechanicPerformance: {}, weeklyThroughput: {} })),
       set: vi.fn(),
     } as any;
-    const app = createApp({ pool: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() }, redis });
+    const app = createApp({ sequelize: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() }, redis });
     const res = await request(app).get('/monthly/2024/5');
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ year: 2024, month: 5, mechanicPerformance: {}, weeklyThroughput: {} });
@@ -117,7 +125,7 @@ describe('reports controller', () => {
       get: vi.fn().mockRejectedValue(new Error('cache get')),
       set: vi.fn().mockResolvedValue(undefined),
     } as any;
-    const app = createApp({ pool: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() }, redis });
+    const app = createApp({ sequelize: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() }, redis });
     const res = await request(app).get('/monthly/2024/5');
     expect(res.status).toBe(200);
     expect(datastore.get).toHaveBeenCalled();
@@ -132,7 +140,7 @@ describe('reports controller', () => {
       get: vi.fn().mockResolvedValue(null),
       set: vi.fn().mockRejectedValue(new Error('cache set')),
     } as any;
-    const app = createApp({ pool: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() }, redis });
+    const app = createApp({ sequelize: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() }, redis });
     const res = await request(app).get('/monthly/2024/5');
     expect(res.status).toBe(200);
     expect(redis.set).toHaveBeenCalled();
@@ -140,22 +148,24 @@ describe('reports controller', () => {
 
   it('returns 404 for missing report', async () => {
     const datastore = { key: vi.fn(() => 'key'), get: vi.fn().mockResolvedValue([undefined]) } as any;
-    const app = createApp({ pool: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() } });
+    const app = createApp({ sequelize: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() } });
     const res = await request(app).get('/monthly/2024/5');
     expect(res.status).toBe(404);
   });
 
   it('validates monthly report params', async () => {
     const datastore = { key: vi.fn(() => 'key'), get: vi.fn() } as any;
-    const app = createApp({ pool: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() } });
+    const app = createApp({ sequelize: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() } });
     const res = await request(app).get('/monthly/2024/13');
     expect(res.status).toBe(400);
   });
 
   it('handles database errors when listing months', async () => {
     const error = new Error('db fail');
-    const pool = { query: vi.fn().mockRejectedValue(error) } as any;
-    const app = createApp({ pool, datastore: {}, useCase: { execute: vi.fn() } }, false);
+
+    const sequelize = { query: vi.fn().mockRejectedValue(error) } as any;
+    const app = createApp({ sequelize, datastore: {}, useCase: { execute: vi.fn() } }, false);
+
     const errors: any[] = [];
     app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
       errors.push(err);
@@ -169,7 +179,9 @@ describe('reports controller', () => {
   it('handles publish errors', async () => {
     const error = new Error('publish fail');
     const execute = vi.fn().mockRejectedValue(error);
-    const app = createApp({ pool: { query: vi.fn() }, datastore: {}, useCase: { execute } }, false);
+
+    const app = createApp({ sequelize: { query: vi.fn() }, datastore: {}, useCase: { execute } }, false);
+
     const errors: any[] = [];
     app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
       errors.push(err);
@@ -183,7 +195,9 @@ describe('reports controller', () => {
   it('handles datastore errors when fetching reports', async () => {
     const error = new Error('ds fail');
     const datastore = { key: vi.fn(() => 'key'), get: vi.fn().mockRejectedValue(error) } as any;
-    const app = createApp({ pool: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() } }, false);
+
+    const app = createApp({ sequelize: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() } }, false);
+
     const errors: any[] = [];
     app.use((err: any, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
       errors.push(err);

@@ -21,17 +21,9 @@ const main = async () => {
           }),
         ),
     },
-    { name: 'database pool', close: () => shared.getPool().end() },
+    { name: 'database', close: () => shared.getSequelize().close() },
     { name: 'Pub/Sub client', close: () => shared.getPubSub().close() },
-    {
-      name: 'Datastore client',
-      close: async () => {
-        const datastore = shared.getDatastore() as { close?: () => Promise<void> };
-        if (typeof datastore.close === 'function') {
-          await datastore.close();
-        }
-      },
-    },
+    { name: 'Datastore client', close: () => shared.getDatastore().close() },
   ];
 
   process.on('SIGINT', () => {

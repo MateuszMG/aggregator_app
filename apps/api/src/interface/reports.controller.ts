@@ -1,5 +1,6 @@
 import { Router, Request, Response, NextFunction } from 'express';
-import { Pool } from 'pg';
+import type { Sequelize } from 'sequelize';
+import { QueryTypes } from 'sequelize';
 import { Datastore } from '@google-cloud/datastore';
 import { GenerateReportUseCase } from '../application/generate-report.usecase';
 import {
@@ -14,13 +15,13 @@ import type { RedisClientType } from 'redis';
 import { ValidationError, NotFoundError } from '../errors';
 
 interface Deps {
-  pool: Pool;
+  sequelize: Sequelize;
   datastore: Datastore;
   useCase: GenerateReportUseCase;
   redis: RedisClientType;
 }
 
-export const createReportsRouter = ({ pool, datastore, useCase, redis }: Deps): Router => {
+export const createReportsRouter = ({ sequelize, datastore, useCase, redis }: Deps): Router => {
   const router = Router();
 
   router.get('/available-months', async (_req: Request, res: Response, next: NextFunction) => {
@@ -35,15 +36,18 @@ export const createReportsRouter = ({ pool, datastore, useCase, redis }: Deps): 
       logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to retrieve months from cache');
     }
     try {
-      const { rows } = await pool.query(
+      const rows = await sequelize.query(
         `SELECT DISTINCT
            EXTRACT(YEAR FROM date_finished AT TIME ZONE 'UTC') AS year,
            EXTRACT(MONTH FROM date_finished AT TIME ZONE 'UTC') AS month
          FROM service_orders
          WHERE date_finished IS NOT NULL
          ORDER BY year, month`,
+        { type: QueryTypes.SELECT },
       );
-      const months = availableMonthsSchema.parse(rows.map((r) => ({ year: Number(r.year), month: Number(r.month) })));
+      const months = availableMonthsSchema.parse(
+        (rows as any[]).map((r) => ({ year: Number(r.year), month: Number(r.month) })),
+      );
       res.json(months);
       try {
         await redis.set(cacheKey, JSON.stringify(months), {

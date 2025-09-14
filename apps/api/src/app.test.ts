@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import request from 'supertest';
 
-const pool = { query: vi.fn().mockResolvedValue(undefined) } as any;
+const sequelize = { query: vi.fn().mockResolvedValue(undefined) } as any;
 const datastore = { key: vi.fn(() => 'key'), get: vi.fn().mockResolvedValue([{}]) } as any;
 const publishMessage = vi.fn().mockResolvedValue(undefined);
 const pubsub = {
@@ -25,7 +25,7 @@ vi.mock('shared', async () => {
   const actual = await vi.importActual<typeof import('shared')>('shared');
   return {
     ...actual,
-    getPool: () => pool,
+    getSequelize: () => sequelize,
     getDatastore: () => datastore,
     getPubSub: () => pubsub,
     getRedis: () => redis,
@@ -42,7 +42,7 @@ describe('app integration', () => {
   });
 
   it('returns available months', async () => {
-    pool.query.mockResolvedValueOnce({ rows: [{ year: 2024, month: 1 }] });
+    sequelize.query.mockResolvedValueOnce([{ year: 2024, month: 1 }]);
     const app = createApp();
     const res = await request(app).get('/api/reports/available-months');
     expect(res.status).toBe(200);
@@ -89,7 +89,7 @@ describe('app integration', () => {
   });
 
   it('returns 500 when listing months fails', async () => {
-    pool.query.mockRejectedValueOnce(new Error('db fail'));
+    sequelize.query.mockRejectedValueOnce(new Error('db fail'));
     const app = createApp();
     const res = await request(app).get('/api/reports/available-months');
     expect(res.status).toBe(500);

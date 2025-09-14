@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
 const mocks = vi.hoisted(() => ({
-  getPool: vi.fn(),
+  getSequelize: vi.fn(),
   getDatastore: vi.fn(),
   getPubSub: vi.fn(),
   loggerError: vi.fn(),
@@ -17,7 +17,7 @@ const mocks = vi.hoisted(() => ({
 }));
 
 vi.mock('shared', () => ({
-  getPool: mocks.getPool,
+  getSequelize: mocks.getSequelize,
   getDatastore: mocks.getDatastore,
   getPubSub: mocks.getPubSub,
   logger: { error: mocks.loggerError, info: mocks.loggerInfo },
@@ -27,7 +27,7 @@ vi.mock('shared', () => ({
 }));
 vi.mock('./interface/pubsub.subscriber', () => ({ startSubscriber: mocks.startSubscriber }));
 vi.mock('./application/generate-report.usecase', () => ({ GenerateReportUseCase: mocks.GenerateReportUseCase }));
-vi.mock('./infrastructure/pg.orderRepository', () => ({ fetchOrders: mocks.fetchOrders }));
+vi.mock('./infrastructure/sequelize.orderRepository', () => ({ fetchOrders: mocks.fetchOrders }));
 vi.mock('./infrastructure/datastore.reportRepository', () => ({ saveReport: mocks.saveReport }));
 
 describe('main', () => {
@@ -39,11 +39,11 @@ describe('main', () => {
   });
 
   it('starts subscriber successfully', async () => {
-    const pool = {};
+    const sequelize = {};
     const datastore = {};
     const pubsub = {};
     const subscription = {};
-    mocks.getPool.mockReturnValue(pool);
+    mocks.getSequelize.mockReturnValue(sequelize);
     mocks.getDatastore.mockReturnValue(datastore);
     mocks.getPubSub.mockReturnValue(pubsub);
     mocks.startSubscriber.mockResolvedValue(subscription);
@@ -60,22 +60,22 @@ describe('main', () => {
     await import('./main');
     await Promise.resolve();
 
-    expect(mocks.getPool).toHaveBeenCalled();
+    expect(mocks.getSequelize).toHaveBeenCalled();
     expect(mocks.getDatastore).toHaveBeenCalled();
     expect(mocks.getPubSub).toHaveBeenCalled();
     expect(mocks.GenerateReportUseCase).toHaveBeenCalled();
-    expect(mocks.fetchOrders).toHaveBeenCalledWith(pool, 2024, 5);
+    expect(mocks.fetchOrders).toHaveBeenCalledWith(sequelize, 2024, 5);
     expect(mocks.saveReport).toHaveBeenCalledWith(datastore, { test: true });
     expect(mocks.startSubscriber).toHaveBeenCalledWith(pubsub, useCaseInstance);
     expect(mocks.loggerError).not.toHaveBeenCalled();
   });
 
   it('cleans up resources on SIGINT', async () => {
-    const pool = { end: vi.fn().mockResolvedValue(undefined) } as any;
+    const sequelize = { close: vi.fn().mockResolvedValue(undefined) } as any;
     const pubsub = { close: vi.fn().mockResolvedValue(undefined) } as any;
     const datastore = { close: vi.fn().mockResolvedValue(undefined) } as any;
     const subscription = { close: vi.fn().mockResolvedValue(undefined) } as any;
-    mocks.getPool.mockReturnValue(pool);
+    mocks.getSequelize.mockReturnValue(sequelize);
     mocks.getPubSub.mockReturnValue(pubsub);
     mocks.getDatastore.mockReturnValue(datastore);
     mocks.startSubscriber.mockResolvedValue(subscription);
@@ -87,17 +87,17 @@ describe('main', () => {
     await Promise.resolve();
 
     expect(subscription.close).toHaveBeenCalled();
-    expect(pool.end).toHaveBeenCalled();
+    expect(sequelize.close).toHaveBeenCalled();
     expect(pubsub.close).toHaveBeenCalled();
     expect(datastore.close).toHaveBeenCalled();
   });
 
   it('logs and exits on failure', async () => {
-    const pool = {};
+    const sequelize = {};
     const datastore = {};
     const pubsub = {};
     const error = new Error('fail');
-    mocks.getPool.mockReturnValue(pool);
+    mocks.getSequelize.mockReturnValue(sequelize);
     mocks.getDatastore.mockReturnValue(datastore);
     mocks.getPubSub.mockReturnValue(pubsub);
     mocks.startSubscriber.mockRejectedValue(error);

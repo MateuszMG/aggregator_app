@@ -1,8 +1,16 @@
 import http from 'http';
-import { getDatastore, getPool, getPubSub, gracefulShutdown, envConfig, type Closable, initTelemetry } from 'shared';
+import {
+  getDatastore,
+  getSequelize,
+  getPubSub,
+  gracefulShutdown,
+  envConfig,
+  type Closable,
+  initTelemetry,
+} from 'shared';
 import { startSubscriber } from './interface/pubsub.subscriber';
 import { GenerateReportUseCase } from './application/generate-report.usecase';
-import { fetchOrders } from './infrastructure/pg.orderRepository';
+import { fetchOrders } from './infrastructure/sequelize.orderRepository';
 import { saveReport } from './infrastructure/datastore.reportRepository';
 import { logger } from 'shared';
 import { register } from './metrics';
@@ -10,12 +18,12 @@ import { register } from './metrics';
 const main = async () => {
   await initTelemetry();
 
-  const pool = getPool();
+  const sequelize = getSequelize();
   const datastore = getDatastore();
   const pubsub = getPubSub();
 
   const useCase = new GenerateReportUseCase(
-    { fetchOrders: (year, month) => fetchOrders(pool, year, month) },
+    { fetchOrders: (year, month) => fetchOrders(sequelize, year, month) },
     { save: (report) => saveReport(datastore, report) },
   );
 
@@ -40,7 +48,7 @@ const main = async () => {
 
   const resources: Closable[] = [
     { name: 'subscription', close: () => subscription.close() },
-    { name: 'database pool', close: () => pool.end() },
+    { name: 'database', close: () => sequelize.close() },
     { name: 'Pub/Sub client', close: () => pubsub.close() },
     { name: 'Datastore client', close: () => datastore.close() },
     { name: 'metrics server', close: () => new Promise((resolve) => metricsServer.close(resolve as any)) },

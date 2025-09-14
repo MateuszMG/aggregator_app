@@ -1,8 +1,8 @@
 import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
+import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { PubSubInstrumentation } from 'opentelemetry-instrumentation-pubsub';
 import { envConfig } from './config';
-import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { logger } from './logger';
 
 let sdk: NodeSDK | undefined;
@@ -26,7 +26,7 @@ export const initTelemetry = async () => {
       getNodeAutoInstrumentations({
         '@opentelemetry/instrumentation-express': { enabled: true },
         '@opentelemetry/instrumentation-http': { enabled: true },
-        '@opentelemetry/instrumentation-pg': { enabled: true },
+        '@opentelemetry/instrumentation-sequelize': { enabled: true },
         '@opentelemetry/instrumentation-redis': { enabled: true },
       }),
       new PubSubInstrumentation(),

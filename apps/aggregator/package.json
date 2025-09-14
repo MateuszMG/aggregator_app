@@ -14,10 +14,8 @@
     "@opentelemetry/exporter-trace-otlp-http": "^0.205.0",
     "@opentelemetry/sdk-node": "^0.205.0",
     "date-fns": "^3.6.0",
-    "pg": "^8.11.3",
+    "sequelize": "^6.37.7",
     "shared": "workspace:*"
   },
-  "devDependencies": {
-    "@types/pg": "^8.10.2"
-  }
+  "devDependencies": {}
 }

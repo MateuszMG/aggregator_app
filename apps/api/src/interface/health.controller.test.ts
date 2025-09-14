@@ -11,7 +11,7 @@ import { createHealthRouter } from './health.controller';
 import { logger } from 'shared';
 
 describe('health controller', () => {
-  let pool: any;
+  let sequelize: any;
   let datastore: any;
   let pubsub: any;
   let redis: any;
@@ -19,13 +19,13 @@ describe('health controller', () => {
 
   const createApp = () => {
     const app = express();
-    app.use('/health_check', createHealthRouter({ pool, datastore, pubsub, redis }));
+    app.use('/health_check', createHealthRouter({ sequelize, datastore, pubsub, redis }));
     return app;
   };
 
   beforeEach(() => {
     vi.clearAllMocks();
-    pool = { query: vi.fn().mockResolvedValue(undefined) } as any;
+    sequelize = { query: vi.fn().mockResolvedValue(undefined) } as any;
     datastore = { key: vi.fn(() => 'key'), get: vi.fn().mockResolvedValue([{}]) } as any;
     subscriptionExists = vi.fn().mockResolvedValue([true]);
     pubsub = {
@@ -49,7 +49,7 @@ describe('health controller', () => {
 
   it('reports failing health check', async () => {
     redis.ping.mockRejectedValueOnce(new Error('fail'));
-    pool.query.mockRejectedValueOnce(new Error('db'));
+    sequelize.query.mockRejectedValueOnce(new Error('db'));
     pubsub.getTopics.mockRejectedValueOnce(new Error('pub'));
     datastore.get.mockRejectedValueOnce(new Error('ds'));
     subscriptionExists.mockRejectedValueOnce(new Error('sub'));

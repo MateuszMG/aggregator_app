@@ -1,4 +1,4 @@
-import { Pool } from 'pg';
+import { Sequelize } from 'sequelize';
 import { PubSub } from '@google-cloud/pubsub';
 import { Datastore } from '@google-cloud/datastore';
 import { createClient, type RedisClientType } from 'redis';
@@ -11,16 +11,20 @@ const max = envConfig.PG_POOL_MAX;
 const idleTimeoutMillis = envConfig.PG_POOL_IDLE;
 const redisUrl = envConfig.REDIS_URL;
 
-let pool: Pool;
+let sequelize: Sequelize;
 let pubsub: PubSub;
 let datastore: Datastore;
 let redis: RedisClientType;
 
-export const getPool = (): Pool => {
-  if (!pool) {
-    pool = new Pool({ connectionString, max, idleTimeoutMillis });
+export const getSequelize = (): Sequelize => {
+  if (!sequelize) {
+    sequelize = new Sequelize(connectionString, {
+      dialect: 'postgres',
+      pool: { max, idle: idleTimeoutMillis },
+      logging: false,
+    });
   }
-  return pool;
+  return sequelize;
 };
 
 export const getPubSub = (): PubSub => {

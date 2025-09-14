@@ -15,12 +15,10 @@
     "@opentelemetry/exporter-trace-otlp-http": "^0.205.0",
     "@opentelemetry/sdk-node": "^0.205.0",
     "opentelemetry-instrumentation-pubsub": "^2.1.0",
-    "pg": "^8.11.3",
+    "sequelize": "^6.37.7",
     "pino": "^9.9.5",
     "redis": "^4.7.0",
     "zod": "^3.23.8"
   },
-  "devDependencies": {
-    "@types/pg": "^8.10.2"
-  }
+  "devDependencies": {}
 }

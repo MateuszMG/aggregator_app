@@ -1,5 +1,5 @@
 import { monthlyReportSchema, MonthlyReport } from 'shared';
-import type { OrderAggregates } from '../infrastructure/pg.orderRepository';
+import type { OrderAggregates } from '../infrastructure/sequelize.orderRepository';
 
 export interface OrderRepository {
   fetchOrders(year: number, month: number): Promise<OrderAggregates>;
