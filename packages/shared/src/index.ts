@@ -10,6 +10,7 @@ export { HttpError, ValidationError, NotFoundError, errorHandler } from './error
 export { PUBSUB_TOPICS, getSubscriptionName, type PubSubTopic } from './pubsub/pubsub';
 export { buildReportId } from './helpers/helpers';
 export { envConfig } from './config/config';
+export { getCached, setCached } from './redis/redis';
 export { getSequelize, getPubSub, getDatastore, getRedis } from './clients/clients';
 export { gracefulShutdown, type Closable } from './shutdown/shutdown';
 export { initTelemetry } from './telemetry/telemetry';
