@@ -1,3 +1,20 @@
+# Intro
+
+This project showcases an event-driven, hexagonal architecture for generating monthly reports. It is composed of two Dockerized Node.js services—an HTTP API and a background aggregator—that communicate via Google Cloud Pub/Sub.
+
+## Features
+
+- Dockerized **api** and **aggregator** services
+- Event-driven and Hexagonal Architecture
+- Google Cloud emulators for `@google-cloud/pubsub` and `@google-cloud/datastore`
+- PostgreSQL database
+- OpenAPI documentation served at `http://localhost:3001/openapi.json`
+- Metrics with Prometheus
+- Distributed tracing via OpenTelemetry
+- Redis caching layer
+- GitHub Actions for CI/CD
+- Vitest tests with coverage above 80%
+
 # How to Run
 
 ## Prerequisites
@@ -53,11 +70,19 @@ To start the API without hot reloading, run:
 pnpm --filter api start
 ```
 
+## Testing
+
+Run the test suite with coverage:
+
+```bash
+pnpm test
+```
+
+The project maintains over 80% code coverage using Vitest.
+
 ## Using the API
 
-The repository includes a request collection at `apps/api/http.rest` for use
-with tools like the 'REST Client extension'
-It contains ready-to-run examples for the endpoints below.
+The repository includes a request collection at `apps/api/http.rest` for use with tools like the "REST Client" extension. It contains ready-to-run examples for the endpoints below. The API also exposes an OpenAPI 3.0 schema at `http://localhost:3001/openapi.json` for exploration and client generation.
 
 Assuming the stack is running, interact with the service via HTTP:
 
@@ -107,6 +132,10 @@ With the collector running and the services started, open `http://localhost:1668
 ## Caching
 
 Responses for `available-months` and individual `monthly` reports are cached in Redis to reduce load on the database and Datastore. Cached entries expire after `REPORTS_CACHE_TTL_SECONDS` (default `3600`), which can be tuned in the environment. To invalidate the cache manually—for example, immediately after generating new reports—delete the keys `available-months` or `monthly:{year}-{month}` from Redis. Otherwise, stale data is automatically refreshed once the TTL elapses.
+
+## CI/CD
+
+GitHub Actions orchestrate continuous integration and delivery. The [`ci.yml`](.github/workflows/ci.yml) workflow checks formatting, runs tests, and builds the project on every push or pull request. The [`cd.yml`](.github/workflows/cd.yml) workflow builds and publishes Docker images for both services to the GitHub Container Registry.
 
 ## Stop and Clean Up
 
