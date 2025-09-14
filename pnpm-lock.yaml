@@ -182,8 +182,8 @@ importers:
         specifier: ^6.37.7
         version: 6.37.7(pg@8.16.3)
       zod:
-        specifier: ^3.23.8
-        version: 3.25.76
+        specifier: ^4.1.8
+        version: 4.1.8
     devDependencies:
       '@types/express':
         specifier: ^5.0.3
@@ -2710,8 +2710,8 @@ packages:
     resolution: {integrity: sha512-Ux4ygGWsu2c7isFWe8Yu1YluJmqVhxqK2cLXNQA5AcC3QfbGNpM7fu0Y8b/z16pXLnFxZYvWhd3fhBY9DLmC6Q==}
     engines: {node: '>=6'}
 
-  zod@3.25.76:
-    resolution: {integrity: sha512-gzUt/qt81nXsFGKIFcC3YnfEAx5NkunCfnDlvuBSSFS02bcXu4Lmea0AFIUwbLWxWPx3d9p8S5QoaujKcNQxcQ==}
+  zod@4.1.8:
+    resolution: {integrity: sha512-5R1P+WwQqmmMIEACyzSvo4JXHY5WiAFHRMg+zBZKgKS+Q1viRa0C1hmUKtHltoIFKtIdki3pRxkmpP74jnNYHQ==}
 
 snapshots:
 
@@ -5469,4 +5469,4 @@ snapshots:
 
   yn@3.1.1: {}
 
-  zod@3.25.76: {}
+  zod@4.1.8: {}
