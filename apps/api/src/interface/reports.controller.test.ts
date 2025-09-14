@@ -2,7 +2,7 @@ import { describe, it, expect, vi } from 'vitest';
 import request from 'supertest';
 import express from 'express';
 import { createReportsRouter } from './reports.controller';
-import { ValidationError, NotFoundError } from '../errors';
+import { ValidationError, NotFoundError } from 'shared';
 
 describe('reports controller', () => {
   const createApp = (deps: any, withErrorHandler = true) => {

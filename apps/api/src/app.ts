@@ -1,4 +1,4 @@
-import express, { NextFunction, Request, Response } from 'express';
+import express, { Request, Response } from 'express';
 import helmet from 'helmet';
 import cors from 'cors';
 import { appLimiter } from './middleware/rateLimiter';
@@ -10,7 +10,7 @@ import { getSequelize, getDatastore, getPubSub, getRedis, envConfig } from 'shar
 import { logger } from 'shared';
 import { openApiHandler, openApiSchema } from './openapi';
 import { httpRequestDuration, register } from './metrics';
-import { HttpError, ValidationError, NotFoundError } from './errors';
+import { errorHandler } from 'shared';
 
 export const createApp = () => {
   const app = express();
@@ -54,21 +54,7 @@ export const createApp = () => {
       .catch(() => {});
   }
 
-  app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    if (!err.logged && !(err instanceof HttpError)) {
-      logger.error({ err: err instanceof Error ? err.message : String(err) });
-    }
-
-    if (err instanceof ValidationError) {
-      return res.status(400).json({ errors: err.details });
-    }
-
-    if (err instanceof NotFoundError) {
-      return res.status(404).json({ error: err.message });
-    }
-
-    res.status(500).json({ error: 'Internal Server Error' });
-  });
+  app.use(errorHandler);
 
   return app;
 };

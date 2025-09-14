@@ -12,7 +12,7 @@ import {
   envConfig,
 } from 'shared';
 import type { RedisClientType } from 'redis';
-import { ValidationError, NotFoundError } from '../errors';
+import { ValidationError, NotFoundError } from 'shared';
 
 interface Deps {
   sequelize: Sequelize;
