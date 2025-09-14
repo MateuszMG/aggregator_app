@@ -1,7 +1,29 @@
-import { Counter, Histogram, Registry, collectDefaultMetrics } from 'prom-client';
+import { Counter, Gauge, Histogram, Registry, collectDefaultMetrics } from 'prom-client';
 
 export const register = new Registry();
 collectDefaultMetrics({ register });
+
+register.removeSingleMetric('process_cpu_seconds_total');
+register.removeSingleMetric('process_resident_memory_bytes');
+
+export const processCpuSecondsTotal = new Gauge({
+  name: 'process_cpu_seconds_total',
+  help: 'Total user and system CPU time in seconds',
+  registers: [register],
+  collect() {
+    const { user, system } = process.cpuUsage();
+    this.set((user + system) / 1e6);
+  },
+});
+
+export const processResidentMemoryBytes = new Gauge({
+  name: 'process_resident_memory_bytes',
+  help: 'Resident memory size in bytes',
+  registers: [register],
+  collect() {
+    this.set(process.memoryUsage().rss);
+  },
+});
 
 export const httpRequestDuration = new Histogram({
   name: 'http_request_duration_seconds',
