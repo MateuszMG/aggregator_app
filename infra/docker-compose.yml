@@ -40,7 +40,7 @@ services:
     volumes:
       - ../apps/aggregator:/usr/src/app/apps/aggregator
     ports:
-      - '3002:3002'
+      - '${AGGREGATOR_PORT:-3002}:${AGGREGATOR_PORT:-3002}'
 
   api:
     build:
@@ -51,7 +51,7 @@ services:
       - gcp-emulators
       - redis
     ports:
-      - '3001:3001'
+      - '${PORT:-3001}:${PORT:-3001}'
     env_file:
       - ../.env
     volumes:

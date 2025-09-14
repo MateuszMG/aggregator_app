@@ -21,6 +21,7 @@ vi.mock('shared', () => ({
   getPubSub: mocks.getPubSub,
   logger: { error: mocks.loggerError, info: mocks.loggerInfo },
   gracefulShutdown: mocks.gracefulShutdown,
+  envConfig: { AGGREGATOR_PORT: 3002 },
 }));
 vi.mock('./interface/pubsub.subscriber', () => ({ startSubscriber: mocks.startSubscriber }));
 vi.mock('./application/generate-report.usecase', () => ({ GenerateReportUseCase: mocks.GenerateReportUseCase }));

@@ -9,6 +9,7 @@ const validEnv = {
   RATE_LIMIT_WINDOW: '900000',
   PG_POOL_MAX: '10',
   PG_POOL_IDLE: '10000',
+  AGGREGATOR_PORT: '3002',
   ALLOWED_ORIGINS: 'http://localhost',
 };
 
@@ -21,6 +22,7 @@ describe('config', () => {
   it('parses valid environment', async () => {
     const { envConfig } = await import('./config');
     expect(envConfig.PORT).toBe(3001);
+    expect(envConfig.AGGREGATOR_PORT).toBe(3002);
     expect(envConfig.ALLOWED_ORIGINS).toEqual(['http://localhost']);
   });
 

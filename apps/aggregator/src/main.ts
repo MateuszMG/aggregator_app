@@ -1,5 +1,5 @@
 import http from 'http';
-import { getDatastore, getPool, getPubSub, gracefulShutdown, type Closable } from 'shared';
+import { getDatastore, getPool, getPubSub, gracefulShutdown, envConfig, type Closable } from 'shared';
 import { startSubscriber } from './interface/pubsub.subscriber';
 import { GenerateReportUseCase } from './application/generate-report.usecase';
 import { fetchOrders } from './infrastructure/pg.orderRepository';
@@ -28,9 +28,9 @@ const main = async () => {
       res.end();
     }
   });
-  const metricsPort = process.env.NODE_ENV === 'test' ? 0 : Number(process.env.METRICS_PORT ?? 3002);
-  metricsServer.listen(metricsPort, () => {
-    logger.info(`Metrics server listening on port ${metricsPort}`);
+  const aggregatorPort = process.env.NODE_ENV === 'test' ? 0 : envConfig.AGGREGATOR_PORT;
+  metricsServer.listen(aggregatorPort, () => {
+    logger.info(`Metrics server listening on port ${aggregatorPort}`);
   });
   if (process.env.NODE_ENV === 'test') {
     metricsServer.unref();
