@@ -92,6 +92,10 @@ Both services expose Prometheus metrics.
 
 Point your Prometheus server at these endpoints to enable scraping.
 
+## Caching
+
+Responses for `available-months` and individual `monthly` reports are cached in Redis to reduce load on the database and Datastore. Cached entries expire after `REPORTS_CACHE_TTL_SECONDS` (default `3600`), which can be tuned in the environment. To invalidate the cache manually—for example, immediately after generating new reports—delete the keys `available-months` or `monthly:{year}-{month}` from Redis. Otherwise, stale data is automatically refreshed once the TTL elapses.
+
 ## Stop and Clean Up
 
 When you are finished working with the application, shut down all running services.

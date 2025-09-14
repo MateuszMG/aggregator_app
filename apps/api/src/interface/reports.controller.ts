@@ -1,9 +1,15 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import { Pool } from 'pg';
 import { Datastore } from '@google-cloud/datastore';
-import { availableMonthsSchema, buildReportId, monthlyReportSchema, reportFiltersSchema } from 'shared';
 import { GenerateReportUseCase } from '../application/generate-report.usecase';
-import { logger } from 'shared';
+import {
+  availableMonthsSchema,
+  buildReportId,
+  monthlyReportSchema,
+  reportFiltersSchema,
+  logger,
+  envConfig,
+} from 'shared';
 import type { RedisClientType } from 'redis';
 
 interface Deps {
@@ -39,7 +45,9 @@ export const createReportsRouter = ({ pool, datastore, useCase, redis }: Deps): 
       const months = availableMonthsSchema.parse(rows.map((r) => ({ year: Number(r.year), month: Number(r.month) })));
       res.json(months);
       try {
-        await redis.set(cacheKey, JSON.stringify(months));
+        await redis.set(cacheKey, JSON.stringify(months), {
+          EX: envConfig.REPORTS_CACHE_TTL_SECONDS,
+        });
       } catch (err) {
         logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to store months in cache');
       }
@@ -93,7 +101,9 @@ export const createReportsRouter = ({ pool, datastore, useCase, redis }: Deps): 
       const report = monthlyReportSchema.parse(entity);
       res.json(report);
       try {
-        await redis.set(cacheKey, JSON.stringify(report));
+        await redis.set(cacheKey, JSON.stringify(months), {
+          EX: envConfig.REPORTS_CACHE_TTL_SECONDS,
+        });
       } catch (err) {
         logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to store report in cache');
       }
