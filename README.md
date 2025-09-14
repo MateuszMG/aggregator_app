@@ -92,6 +92,18 @@ Both services expose Prometheus metrics.
 
 Point your Prometheus server at these endpoints to enable scraping.
 
+## Tracing
+
+Both services emit OpenTelemetry traces. Spans are exported using OTLP to the endpoint configured by `OTEL_EXPORTER_OTLP_ENDPOINT` (default `http://localhost:4318/v1/traces`).
+
+To view traces locally, run a collector with a Jaeger UI:
+
+```bash
+docker run --rm -p 4318:4318 -p 16686:16686 jaegertracing/all-in-one
+```
+
+With the collector running and the services started, open `http://localhost:16686` to explore traces.
+
 ## Caching
 
 Responses for `available-months` and individual `monthly` reports are cached in Redis to reduce load on the database and Datastore. Cached entries expire after `REPORTS_CACHE_TTL_SECONDS` (default `3600`), which can be tuned in the environment. To invalidate the cache manually—for example, immediately after generating new reports—delete the keys `available-months` or `monthly:{year}-{month}` from Redis. Otherwise, stale data is automatically refreshed once the TTL elapses.

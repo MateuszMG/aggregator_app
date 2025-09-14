@@ -1,5 +1,5 @@
 import http from 'http';
-import { getDatastore, getPool, getPubSub, gracefulShutdown, envConfig, type Closable } from 'shared';
+import { getDatastore, getPool, getPubSub, gracefulShutdown, envConfig, type Closable, initTelemetry } from 'shared';
 import { startSubscriber } from './interface/pubsub.subscriber';
 import { GenerateReportUseCase } from './application/generate-report.usecase';
 import { fetchOrders } from './infrastructure/pg.orderRepository';
@@ -8,6 +8,8 @@ import { logger } from 'shared';
 import { register } from './metrics';
 
 const main = async () => {
+  await initTelemetry();
+
   const pool = getPool();
   const datastore = getDatastore();
   const pubsub = getPubSub();
@@ -40,15 +42,7 @@ const main = async () => {
     { name: 'subscription', close: () => subscription.close() },
     { name: 'database pool', close: () => pool.end() },
     { name: 'Pub/Sub client', close: () => pubsub.close() },
-    {
-      name: 'Datastore client',
-      close: async () => {
-        const ds = datastore as { close?: () => Promise<void> };
-        if (typeof ds.close === 'function') {
-          await ds.close();
-        }
-      },
-    },
+    { name: 'Datastore client', close: () => datastore.close() },
     { name: 'metrics server', close: () => new Promise((resolve) => metricsServer.close(resolve as any)) },
   ];
 

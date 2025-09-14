@@ -17,6 +17,8 @@ const envSchema = z.object({
       .map((v) => v.trim())
       .filter(Boolean),
   ),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().default('http://localhost:4318/v1/traces'),
+  OTEL_EXPORTER_OTLP_HEADERS: z.string().optional(),
 });
 
 export const envConfig = envSchema.parse(process.env);

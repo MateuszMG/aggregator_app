@@ -10,6 +10,7 @@ const mocks = vi.hoisted(() => ({
   GenerateReportUseCase: vi.fn(),
   fetchOrders: vi.fn(),
   saveReport: vi.fn(),
+  initTelemetry: vi.fn(),
   gracefulShutdown: vi.fn(async (_signal, resources: any[]) => {
     await Promise.all(resources.map((r: any) => r.close()));
   }),
@@ -22,6 +23,7 @@ vi.mock('shared', () => ({
   logger: { error: mocks.loggerError, info: mocks.loggerInfo },
   gracefulShutdown: mocks.gracefulShutdown,
   envConfig: { AGGREGATOR_PORT: 3002 },
+  initTelemetry: mocks.initTelemetry,
 }));
 vi.mock('./interface/pubsub.subscriber', () => ({ startSubscriber: mocks.startSubscriber }));
 vi.mock('./application/generate-report.usecase', () => ({ GenerateReportUseCase: mocks.GenerateReportUseCase }));

@@ -8,6 +8,7 @@ const mocks = vi.hoisted(() => ({
   loggerInfo: vi.fn(),
   loggerError: vi.fn(),
   serverClose: vi.fn(),
+  initTelemetry: vi.fn(),
   gracefulShutdown: vi.fn(async (_signal, resources: any[]) => {
     await Promise.all(resources.map((r: any) => r.close()));
   }),
@@ -24,6 +25,7 @@ vi.mock('shared', () => ({
   logger: { info: mocks.loggerInfo, error: mocks.loggerError },
   gracefulShutdown: mocks.gracefulShutdown,
   envConfig: { API_PORT: 3001 },
+  initTelemetry: mocks.initTelemetry,
 }));
 
 describe('main', () => {
