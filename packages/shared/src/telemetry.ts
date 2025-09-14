@@ -26,7 +26,6 @@ export const initTelemetry = async () => {
       getNodeAutoInstrumentations({
         '@opentelemetry/instrumentation-express': { enabled: true },
         '@opentelemetry/instrumentation-http': { enabled: true },
-        '@opentelemetry/instrumentation-sequelize': { enabled: true },
         '@opentelemetry/instrumentation-redis': { enabled: true },
       }),
       new PubSubInstrumentation(),
