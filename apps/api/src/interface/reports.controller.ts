@@ -11,6 +11,7 @@ import {
   envConfig,
 } from 'shared';
 import type { RedisClientType } from 'redis';
+import { ValidationError, NotFoundError } from '../errors';
 
 interface Deps {
   pool: Pool;
@@ -61,7 +62,7 @@ export const createReportsRouter = ({ pool, datastore, useCase, redis }: Deps): 
   router.post('/generate', async (req: Request, res: Response, next: NextFunction) => {
     const parsed = reportFiltersSchema.safeParse(req.body);
     if (!parsed.success) {
-      return res.status(400).json({ errors: parsed.error.format() });
+      return next(new ValidationError(parsed.error.format()));
     }
     try {
       await useCase.execute(parsed.data);
@@ -79,7 +80,7 @@ export const createReportsRouter = ({ pool, datastore, useCase, redis }: Deps): 
       month: Number(req.params.month),
     });
     if (!parsed.success) {
-      return res.status(400).json({ errors: parsed.error.format() });
+      return next(new ValidationError(parsed.error.format()));
     }
     const { year, month } = parsed.data;
     const cacheKey = `monthly:${year}-${month}`;
@@ -96,7 +97,7 @@ export const createReportsRouter = ({ pool, datastore, useCase, redis }: Deps): 
     try {
       const [entity] = await datastore.get(key);
       if (!entity) {
-        return res.status(404).send();
+        return next(new NotFoundError('Report not found'));
       }
       const report = monthlyReportSchema.parse(entity);
       res.json(report);

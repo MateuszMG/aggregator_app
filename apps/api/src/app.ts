@@ -10,11 +10,12 @@ import { getPool, getDatastore, getPubSub, getRedis, envConfig } from 'shared';
 import { logger } from 'shared';
 import { openApiHandler, openApiSchema } from './openapi';
 import { httpRequestDuration, register } from './metrics';
+import { HttpError, ValidationError, NotFoundError } from './errors';
 
 export const createApp = () => {
   const app = express();
   app.disable('x-powered-by');
-  app.use(express.json({ limit: envConfig.REQUEST_BODY_LIMIT }));
+  app.use(express.json());
   app.use('/', appLimiter());
   app.use(helmet());
   app.use(cors({ origin: envConfig.ALLOWED_ORIGINS }));
@@ -35,6 +36,7 @@ export const createApp = () => {
   const useCase = new GenerateReportUseCase(publisher);
 
   app.use('/health_check', createHealthRouter({ pool, datastore, pubsub, redis }));
+
   app.use('/api/reports', createReportsRouter({ pool, datastore, useCase, redis }));
 
   if (process.env.NODE_ENV !== 'production') {
@@ -53,9 +55,18 @@ export const createApp = () => {
   }
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
-    if (!err.logged) {
+    if (!err.logged && !(err instanceof HttpError)) {
       logger.error({ err: err instanceof Error ? err.message : String(err) });
     }
+
+    if (err instanceof ValidationError) {
+      return res.status(400).json({ errors: err.details });
+    }
+
+    if (err instanceof NotFoundError) {
+      return res.status(404).json({ error: err.message });
+    }
+
     res.status(500).json({ error: 'Internal Server Error' });
   });
 
