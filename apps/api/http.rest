@@ -2,6 +2,13 @@
 
 ### Health check
 GET {{host}}/health_check
+# Expected response:
+# {
+#   "redis": true,
+#   "database": true,
+#   "gcpEmulator": true,
+#   "aggregator": true
+# }
 
 ### List available report months
 GET {{host}}/api/reports/available-months

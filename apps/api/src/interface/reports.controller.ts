@@ -4,17 +4,29 @@ import { Datastore } from '@google-cloud/datastore';
 import { availableMonthsSchema, buildReportId, monthlyReportSchema, reportFiltersSchema } from 'shared';
 import { GenerateReportUseCase } from '../application/generate-report.usecase';
 import { logger } from 'shared';
+import type { RedisClientType } from 'redis';
 
 interface Deps {
   pool: Pool;
   datastore: Datastore;
   useCase: GenerateReportUseCase;
+  redis: RedisClientType;
 }
 
-export const createReportsRouter = ({ pool, datastore, useCase }: Deps): Router => {
+export const createReportsRouter = ({ pool, datastore, useCase, redis }: Deps): Router => {
   const router = Router();
 
   router.get('/available-months', async (_req: Request, res: Response, next: NextFunction) => {
+    const cacheKey = 'available-months';
+    try {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        const months = availableMonthsSchema.parse(JSON.parse(cached));
+        return res.json(months);
+      }
+    } catch (err) {
+      logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to retrieve months from cache');
+    }
     try {
       const { rows } = await pool.query(
         `SELECT DISTINCT
@@ -26,6 +38,11 @@ export const createReportsRouter = ({ pool, datastore, useCase }: Deps): Router 
       );
       const months = availableMonthsSchema.parse(rows.map((r) => ({ year: Number(r.year), month: Number(r.month) })));
       res.json(months);
+      try {
+        await redis.set(cacheKey, JSON.stringify(months));
+      } catch (err) {
+        logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to store months in cache');
+      }
     } catch (err) {
       logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to fetch available months');
       (err as any).logged = true;
@@ -57,6 +74,16 @@ export const createReportsRouter = ({ pool, datastore, useCase }: Deps): Router 
       return res.status(400).json({ errors: parsed.error.format() });
     }
     const { year, month } = parsed.data;
+    const cacheKey = `monthly:${year}-${month}`;
+    try {
+      const cached = await redis.get(cacheKey);
+      if (cached) {
+        const report = monthlyReportSchema.parse(JSON.parse(cached));
+        return res.json(report);
+      }
+    } catch (err) {
+      logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to retrieve report from cache');
+    }
     const key = datastore.key(['MonthlyReport', buildReportId({ year, month })]);
     try {
       const [entity] = await datastore.get(key);
@@ -65,6 +92,11 @@ export const createReportsRouter = ({ pool, datastore, useCase }: Deps): Router 
       }
       const report = monthlyReportSchema.parse(entity);
       res.json(report);
+      try {
+        await redis.set(cacheKey, JSON.stringify(report));
+      } catch (err) {
+        logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to store report in cache');
+      }
     } catch (err) {
       logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to fetch report');
       (err as any).logged = true;

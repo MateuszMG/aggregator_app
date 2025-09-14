@@ -6,6 +6,7 @@ describe('clients', () => {
     vi.clearAllMocks();
     delete process.env.GCLOUD_PROJECT;
     delete process.env.DATABASE_URL;
+    delete process.env.REDIS_URL;
   });
 
   it('creates a single pg pool instance', async () => {
@@ -47,5 +48,39 @@ describe('clients', () => {
     expect(d1).toBe(d2);
     expect(DatastoreMock).toHaveBeenCalledTimes(1);
     expect(DatastoreMock).toHaveBeenCalledWith({ projectId: 'proj' });
+  });
+
+  it('creates a single redis client with url', async () => {
+    process.env.REDIS_URL = 'redis://example:6379';
+    const redisInstance = { on: vi.fn(), connect: vi.fn().mockResolvedValue(undefined) } as any;
+    const createClientMock = vi.fn(() => redisInstance);
+    vi.doMock('redis', () => ({ createClient: createClientMock }));
+    const { getRedis } = await import('./clients');
+    const r1 = getRedis();
+    const r2 = getRedis();
+    expect(r1).toBe(redisInstance);
+    expect(r1).toBe(r2);
+    expect(createClientMock).toHaveBeenCalledTimes(1);
+    expect(createClientMock).toHaveBeenCalledWith({ url: 'redis://example:6379' });
+    expect(redisInstance.connect).toHaveBeenCalledTimes(1);
+  });
+
+  it('logs redis errors on connection failure', async () => {
+    process.env.REDIS_URL = 'redis://example:6379';
+    const errorLogger = vi.fn();
+    const redisInstance = {
+      on: vi.fn(),
+      connect: vi.fn().mockRejectedValue(new Error('fail')),
+    } as any;
+    const createClientMock = vi.fn(() => redisInstance);
+    vi.doMock('redis', () => ({ createClient: createClientMock }));
+    vi.doMock('./logger', () => ({ logger: { error: errorLogger } }));
+    const { getRedis } = await import('./clients');
+    getRedis();
+    await Promise.resolve();
+    const handler = redisInstance.on.mock.calls[0][1];
+    handler(new Error('boom'));
+    expect(errorLogger).toHaveBeenCalledWith({ err: 'boom' }, 'Redis Client Error');
+    expect(errorLogger).toHaveBeenCalledWith({ err: 'fail' }, 'Redis connection failed');
   });
 });

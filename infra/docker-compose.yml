@@ -22,6 +22,11 @@ services:
       bash -c "gcloud beta emulators pubsub start --host-port=0.0.0.0:8085 & \
                gcloud beta emulators datastore start --host-port=0.0.0.0:8086 --project=local-dev --no-store-on-disk"
 
+  redis:
+    image: redis:7
+    ports:
+      - '6379:6379'
+
   aggregator:
     build:
       context: ..
@@ -29,6 +34,7 @@ services:
     depends_on:
       - postgres-db
       - gcp-emulators
+      - redis
     environment:
       GCLOUD_PROJECT: local-dev
       DATABASE_URL: postgres://postgres:postgres@postgres-db:5432/service_orders
@@ -45,6 +51,7 @@ services:
     depends_on:
       - postgres-db
       - gcp-emulators
+      - redis
     ports:
       - '3001:3001'
     environment:

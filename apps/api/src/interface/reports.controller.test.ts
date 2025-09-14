@@ -7,7 +7,9 @@ describe('reports controller', () => {
   const createApp = (deps: any) => {
     const app = express();
     app.use(express.json());
-    app.use(createReportsRouter(deps));
+    const redis =
+      deps.redis || ({ get: vi.fn().mockResolvedValue(null), set: vi.fn().mockResolvedValue(undefined) } as any);
+    app.use(createReportsRouter({ ...deps, redis }));
     return app;
   };
 
@@ -17,6 +19,43 @@ describe('reports controller', () => {
     const res = await request(app).get('/available-months');
     expect(res.status).toBe(200);
     expect(res.body).toEqual([{ year: 2024, month: 1 }]);
+  });
+
+  it('returns cached months when available', async () => {
+    const pool = { query: vi.fn() } as any;
+    const redis = {
+      get: vi.fn().mockResolvedValue(JSON.stringify([{ year: 2024, month: 1 }])),
+      set: vi.fn(),
+    } as any;
+    const app = createApp({ pool, datastore: {}, useCase: { execute: vi.fn() }, redis });
+    const res = await request(app).get('/available-months');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual([{ year: 2024, month: 1 }]);
+    expect(pool.query).not.toHaveBeenCalled();
+  });
+
+  it('falls back to db when cache retrieval fails for months', async () => {
+    const pool = { query: vi.fn().mockResolvedValue({ rows: [] }) } as any;
+    const redis = {
+      get: vi.fn().mockRejectedValue(new Error('cache get')),
+      set: vi.fn().mockResolvedValue(undefined),
+    } as any;
+    const app = createApp({ pool, datastore: {}, useCase: { execute: vi.fn() }, redis });
+    const res = await request(app).get('/available-months');
+    expect(res.status).toBe(200);
+    expect(pool.query).toHaveBeenCalled();
+  });
+
+  it('handles cache store errors when listing months', async () => {
+    const pool = { query: vi.fn().mockResolvedValue({ rows: [{ year: 2024, month: 1 }] }) } as any;
+    const redis = {
+      get: vi.fn().mockResolvedValue(null),
+      set: vi.fn().mockRejectedValue(new Error('cache set')),
+    } as any;
+    const app = createApp({ pool, datastore: {}, useCase: { execute: vi.fn() }, redis });
+    const res = await request(app).get('/available-months');
+    expect(res.status).toBe(200);
+    expect(redis.set).toHaveBeenCalled();
   });
 
   it('publishes generate request', async () => {
@@ -40,6 +79,51 @@ describe('reports controller', () => {
     const res = await request(app).get('/monthly/2024/5');
     expect(res.status).toBe(200);
     expect(res.body).toEqual({ year: 2024, month: 5, mechanicPerformance: {}, weeklyThroughput: {} });
+  });
+
+  it('returns cached monthly report when available', async () => {
+    const datastore = { key: vi.fn(() => 'key'), get: vi.fn() } as any;
+    const redis = {
+      get: vi
+        .fn()
+        .mockResolvedValue(JSON.stringify({ year: 2024, month: 5, mechanicPerformance: {}, weeklyThroughput: {} })),
+      set: vi.fn(),
+    } as any;
+    const app = createApp({ pool: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() }, redis });
+    const res = await request(app).get('/monthly/2024/5');
+    expect(res.status).toBe(200);
+    expect(res.body).toEqual({ year: 2024, month: 5, mechanicPerformance: {}, weeklyThroughput: {} });
+    expect(datastore.get).not.toHaveBeenCalled();
+  });
+
+  it('falls back to datastore when cache retrieval fails for report', async () => {
+    const datastore = {
+      key: vi.fn(() => 'key'),
+      get: vi.fn().mockResolvedValue([{ year: 2024, month: 5, mechanicPerformance: {}, weeklyThroughput: {} }]),
+    } as any;
+    const redis = {
+      get: vi.fn().mockRejectedValue(new Error('cache get')),
+      set: vi.fn().mockResolvedValue(undefined),
+    } as any;
+    const app = createApp({ pool: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() }, redis });
+    const res = await request(app).get('/monthly/2024/5');
+    expect(res.status).toBe(200);
+    expect(datastore.get).toHaveBeenCalled();
+  });
+
+  it('handles cache store errors when fetching report', async () => {
+    const datastore = {
+      key: vi.fn(() => 'key'),
+      get: vi.fn().mockResolvedValue([{ year: 2024, month: 5, mechanicPerformance: {}, weeklyThroughput: {} }]),
+    } as any;
+    const redis = {
+      get: vi.fn().mockResolvedValue(null),
+      set: vi.fn().mockRejectedValue(new Error('cache set')),
+    } as any;
+    const app = createApp({ pool: { query: vi.fn() }, datastore, useCase: { execute: vi.fn() }, redis });
+    const res = await request(app).get('/monthly/2024/5');
+    expect(res.status).toBe(200);
+    expect(redis.set).toHaveBeenCalled();
   });
 
   it('returns 404 for missing report', async () => {

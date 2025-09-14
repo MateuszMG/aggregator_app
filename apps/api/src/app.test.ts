@@ -1,11 +1,21 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import request from 'supertest';
 
-const pool = { query: vi.fn() } as any;
-const datastore = { key: vi.fn(() => 'key'), get: vi.fn() } as any;
+const pool = { query: vi.fn().mockResolvedValue(undefined) } as any;
+const datastore = { key: vi.fn(() => 'key'), get: vi.fn().mockResolvedValue([{}]) } as any;
 const publishMessage = vi.fn().mockResolvedValue(undefined);
+const subscriptionExists = vi.fn().mockResolvedValue([true]);
 const pubsub = {
-  topic: vi.fn(() => ({ get: vi.fn().mockResolvedValue([{ publishMessage }]) })),
+  topic: vi.fn(() => ({
+    get: vi.fn().mockResolvedValue([{ publishMessage }]),
+    subscription: vi.fn(() => ({ exists: subscriptionExists })),
+  })),
+  getTopics: vi.fn().mockResolvedValue([]),
+} as any;
+const redis = {
+  get: vi.fn().mockResolvedValue(null),
+  set: vi.fn().mockResolvedValue(undefined),
+  ping: vi.fn().mockResolvedValue('PONG'),
 } as any;
 
 vi.mock('shared', async () => {
@@ -15,6 +25,7 @@ vi.mock('shared', async () => {
     getPool: () => pool,
     getDatastore: () => datastore,
     getPubSub: () => pubsub,
+    getRedis: () => redis,
     logger: { info: vi.fn(), error: vi.fn() },
   };
 });
@@ -31,7 +42,30 @@ describe('app integration', () => {
     const app = createApp();
     const res = await request(app).get('/health_check');
     expect(res.status).toBe(200);
-    expect(res.body).toEqual({ msg: 'ok health_check' });
+    expect(res.body).toEqual({
+      redis: true,
+      database: true,
+      gcpEmulator: true,
+      aggregator: true,
+    });
+  });
+
+  it('reports failing health check', async () => {
+    redis.ping.mockRejectedValueOnce(new Error('fail'));
+    pool.query.mockRejectedValueOnce(new Error('db'));
+    pubsub.getTopics.mockRejectedValueOnce(new Error('pub'));
+    datastore.get.mockRejectedValueOnce(new Error('ds'));
+    subscriptionExists.mockRejectedValueOnce(new Error('sub'));
+    const app = createApp();
+    const res = await request(app).get('/health_check');
+    expect(res.status).toBe(503);
+    expect(res.body).toEqual({
+      redis: false,
+      database: false,
+      gcpEmulator: false,
+      aggregator: false,
+    });
+    expect(logger.error).toHaveBeenCalled();
   });
 
   it('returns available months', async () => {
