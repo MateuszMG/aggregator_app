@@ -1,4 +1,4 @@
-import { ReportFilters } from './validations';
+import { ReportFilters } from '../validations/validations';
 
 /**
  * Utility for building the identifier of a monthly report entity.

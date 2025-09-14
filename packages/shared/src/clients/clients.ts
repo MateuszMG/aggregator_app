@@ -2,8 +2,8 @@ import { Sequelize } from 'sequelize';
 import { PubSub } from '@google-cloud/pubsub';
 import { Datastore } from '@google-cloud/datastore';
 import { createClient, type RedisClientType } from 'redis';
-import { logger } from './logger';
-import { envConfig } from './config';
+import { logger } from '../middleware/logger';
+import { envConfig } from '../config/config';
 
 const projectId = envConfig.GCLOUD_PROJECT;
 const connectionString = envConfig.DATABASE_URL;

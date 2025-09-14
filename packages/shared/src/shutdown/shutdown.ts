@@ -1,4 +1,4 @@
-import { logger } from './logger';
+import { logger } from '../middleware/logger';
 
 export interface Closable {
   name: string;

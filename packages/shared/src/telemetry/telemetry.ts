@@ -2,8 +2,8 @@ import { NodeSDK } from '@opentelemetry/sdk-node';
 import { OTLPTraceExporter } from '@opentelemetry/exporter-trace-otlp-http';
 import { getNodeAutoInstrumentations } from '@opentelemetry/auto-instrumentations-node';
 import { PubSubInstrumentation } from 'opentelemetry-instrumentation-pubsub';
-import { envConfig } from './config';
-import { logger } from './logger';
+import { envConfig } from '../config/config';
+import { logger } from '../middleware/logger';
 
 let sdk: NodeSDK | undefined;
 
