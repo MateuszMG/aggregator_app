@@ -2,6 +2,7 @@
   "name": "aggregator_app",
   "version": "0.0.0",
   "private": true,
+  "type": "module",
   "engines": {
     "node": "22"
   },
@@ -9,12 +10,19 @@
     "dev:api": "pnpm --filter api dev",
     "dev:aggregator": "pnpm --filter aggregator dev",
     "build": "pnpm -r build",
-    "format": "prettier . --write"
+    "format": "prettier . --write",
+    "test": "vitest run --coverage",
+    "test:watch": "vitest --watch"
   },
   "devDependencies": {
     "@types/node": "^24.3.1",
+    "@types/supertest": "^6.0.3",
+    "@vitest/coverage-v8": "^3.2.4",
     "prettier": "^3.6.2",
+    "supertest": "^7.1.4",
     "ts-node-dev": "^2.0.0",
-    "typescript": "5.9.2"
+    "typescript": "5.9.2",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^3.2.4"
   }
 }
