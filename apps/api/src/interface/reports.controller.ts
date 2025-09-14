@@ -101,7 +101,7 @@ export const createReportsRouter = ({ pool, datastore, useCase, redis }: Deps): 
       const report = monthlyReportSchema.parse(entity);
       res.json(report);
       try {
-        await redis.set(cacheKey, JSON.stringify(months), {
+        await redis.set(cacheKey, JSON.stringify(report), {
           EX: envConfig.REPORTS_CACHE_TTL_SECONDS,
         });
       } catch (err) {
