@@ -24,38 +24,52 @@ interface Deps {
 export const createReportsRouter = ({ sequelize, datastore, useCase, redis }: Deps): Router => {
   const router = Router();
 
-  router.get('/available-months', async (_req: Request, res: Response, next: NextFunction) => {
-    const cacheKey = 'available-months';
+  type Parser<T> = { parse: (input: unknown) => T };
+
+  const getCached = async <T>(key: string, schema: Parser<T>, message: string): Promise<T | null> => {
     try {
-      const cached = await redis.get(cacheKey);
+      const cached = await redis.get(key);
       if (cached) {
-        const months = availableMonthsSchema.parse(JSON.parse(cached));
-        return res.json(months);
+        return schema.parse(JSON.parse(cached));
       }
     } catch (err) {
-      logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to retrieve months from cache');
+      logger.error({ err: err instanceof Error ? err.message : String(err) }, message);
+    }
+    return null;
+  };
+
+  const setCached = async (key: string, value: unknown, message: string): Promise<void> => {
+    try {
+      await redis.set(key, JSON.stringify(value), {
+        EX: envConfig.REPORTS_CACHE_TTL_SECONDS,
+      });
+    } catch (err) {
+      logger.error({ err: err instanceof Error ? err.message : String(err) }, message);
+    }
+  };
+
+  router.get('/available-months', async (req: Request, res: Response, next: NextFunction) => {
+    const timezone = typeof req.query.timezone === 'string' ? req.query.timezone : 'UTC';
+    const cacheKey = 'available-months';
+    const monthsFromCache = await getCached(cacheKey, availableMonthsSchema, 'Failed to retrieve months from cache');
+    if (monthsFromCache) {
+      return res.json(monthsFromCache);
     }
     try {
       const rows = await sequelize.query(
         `SELECT DISTINCT
-           EXTRACT(YEAR FROM date_finished AT TIME ZONE 'UTC') AS year,
-           EXTRACT(MONTH FROM date_finished AT TIME ZONE 'UTC') AS month
+           EXTRACT(YEAR FROM date_finished AT TIME ZONE $1) AS year,
+           EXTRACT(MONTH FROM date_finished AT TIME ZONE $1) AS month
          FROM service_orders
          WHERE date_finished IS NOT NULL
          ORDER BY year, month`,
-        { type: QueryTypes.SELECT },
+        { type: QueryTypes.SELECT, replacements: [timezone] },
       );
       const months = availableMonthsSchema.parse(
         (rows as any[]).map((r) => ({ year: Number(r.year), month: Number(r.month) })),
       );
       res.json(months);
-      try {
-        await redis.set(cacheKey, JSON.stringify(months), {
-          EX: envConfig.REPORTS_CACHE_TTL_SECONDS,
-        });
-      } catch (err) {
-        logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to store months in cache');
-      }
+      await setCached(cacheKey, months, 'Failed to store months in cache');
     } catch (err) {
       logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to fetch available months');
       (err as any).logged = true;
@@ -88,14 +102,9 @@ export const createReportsRouter = ({ sequelize, datastore, useCase, redis }: De
     }
     const { year, month } = parsed.data;
     const cacheKey = `monthly:${year}-${month}`;
-    try {
-      const cached = await redis.get(cacheKey);
-      if (cached) {
-        const report = monthlyReportSchema.parse(JSON.parse(cached));
-        return res.json(report);
-      }
-    } catch (err) {
-      logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to retrieve report from cache');
+    const reportFromCache = await getCached(cacheKey, monthlyReportSchema, 'Failed to retrieve report from cache');
+    if (reportFromCache) {
+      return res.json(reportFromCache);
     }
     const key = datastore.key(['MonthlyReport', buildReportId({ year, month })]);
     try {
@@ -105,13 +114,7 @@ export const createReportsRouter = ({ sequelize, datastore, useCase, redis }: De
       }
       const report = monthlyReportSchema.parse(entity);
       res.json(report);
-      try {
-        await redis.set(cacheKey, JSON.stringify(report), {
-          EX: envConfig.REPORTS_CACHE_TTL_SECONDS,
-        });
-      } catch (err) {
-        logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to store report in cache');
-      }
+      await setCached(cacheKey, report, 'Failed to store report in cache');
     } catch (err) {
       logger.error({ err: err instanceof Error ? err.message : String(err) }, 'Failed to fetch report');
       (err as any).logged = true;
