@@ -109,8 +109,8 @@ importers:
         specifier: ^8.16.3
         version: 8.16.3
       pino:
-        specifier: ^9.9.5
-        version: 9.9.5
+        specifier: ^9.11.0
+        version: 9.11.0
       rate-limit-redis:
         specifier: ^4.2.2
         version: 4.2.2(express-rate-limit@8.1.0(express@5.1.0))
@@ -173,8 +173,8 @@ importers:
         specifier: ^2.1.0
         version: 2.1.0(@google-cloud/pubsub@5.2.0)(@opentelemetry/api@1.9.0)
       pino:
-        specifier: ^9.9.5
-        version: 9.9.5
+        specifier: ^9.11.0
+        version: 9.11.0
       redis:
         specifier: ^4.7.0
         version: 4.7.1
@@ -2114,8 +2114,8 @@ packages:
   pino-std-serializers@7.0.0:
     resolution: {integrity: sha512-e906FRY0+tV27iq4juKzSYPbUj2do2X2JX4EzSca1631EB2QJQUqGbDuERal7LCtOpxl6x3+nvo9NPZcmjkiFA==}
 
-  pino@9.9.5:
-    resolution: {integrity: sha512-d1s98p8/4TfYhsJ09r/Azt30aYELRi6NNnZtEbqFw6BoGsdPVf5lKNK3kUwH8BmJJfpTLNuicjUQjaMbd93dVg==}
+  pino@9.11.0:
+    resolution: {integrity: sha512-+YIodBB9sxcWeR8PrXC2K3gEDyfkUuVEITOcbqrfcj+z5QW4ioIcqZfYFbrLTYLsmAwunbS7nfU/dpBB6PZc1g==}
     hasBin: true
 
   postcss@8.5.6:
@@ -4806,7 +4806,7 @@ snapshots:
 
   pino-std-serializers@7.0.0: {}
 
-  pino@9.9.5:
+  pino@9.11.0:
     dependencies:
       atomic-sleep: 1.0.0
       fast-redact: 3.5.0
