@@ -16,7 +16,7 @@
     "@opentelemetry/sdk-node": "^0.205.0",
     "express": "^5.1.0",
     "opentelemetry-instrumentation-pubsub": "^2.1.0",
-    "pino": "^9.9.5",
+    "pino": "^9.11.0",
     "redis": "^4.7.0",
     "sequelize": "^6.37.7",
     "zod": "^3.23.8"
